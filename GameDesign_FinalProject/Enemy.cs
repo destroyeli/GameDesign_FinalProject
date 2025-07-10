@@ -40,13 +40,90 @@ namespace GameDesign_FinalProject
             this.spriteImage = root.Content.Load<Texture2D>("1");
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, GamePlatform[] platforms, Hero hero)
         {
             position += velocity;
 
-            if (position.Y < 0 || position.Y > (root.ScreenHeight - spriteHeight))
+            Vector2 nextPosition = position + velocity;
+            Rectangle nextBounds = new Rectangle((int)nextPosition.X, (int)nextPosition.Y, 150, 100);
+            Rectangle currentBounds = PositionRectangle;
+
+            bool onPlatform = false;
+
+            foreach (GamePlatform p in platforms)
             {
-                velocity.Y *= 0;
+                if (p == null) continue;
+                Rectangle plat = p.PlatformDisplay;
+
+
+
+
+                if (hero.Position.X < position.X)
+                {
+                    velocity.X = -1.0f;
+                }
+
+                else
+                {
+                    velocity.X = 1.0f;
+                }
+
+                if (hero.Position.Y < position.Y)
+                {
+                    if(velocity.Y == 0f)
+                    {
+                        velocity.Y = -5.0f;
+                    }
+
+                    if (velocity.Y < 0f)
+                    {
+                        velocity.Y += 4.0f; // Apply gravity
+                    }
+                }
+
+                
+
+                // === Top Collision (landing on platform) ===
+                if (currentBounds.Bottom <= plat.Top &&
+                    nextBounds.Bottom >= plat.Top &&
+                    nextBounds.Right > plat.Left &&
+                    nextBounds.Left < plat.Right)
+                {
+                    nextPosition.Y = plat.Top - currentBounds.Height;
+                    velocity.Y = 0;
+                    onPlatform = true;
+                }
+
+                // === Bottom Collision (head bumps) ===
+                if (currentBounds.Top >= plat.Bottom &&
+                    nextBounds.Top <= plat.Bottom &&
+                    nextBounds.Right > plat.Left &&
+                    nextBounds.Left < plat.Right)
+                {
+                    nextPosition.Y = plat.Bottom;
+                    velocity.Y = 2f; // push down enough to resume falling
+                }
+
+
+                // === Right-side Collision ===
+                if (currentBounds.Right <= plat.Left &&
+                    nextBounds.Right >= plat.Left &&
+                    nextBounds.Bottom > plat.Top &&
+                    nextBounds.Top < plat.Bottom)
+                {
+                    nextPosition.X = plat.Left - currentBounds.Width;
+                    velocity.X = 0;
+                }
+
+                // === Left-side Collision ===
+                if (currentBounds.Left >= plat.Right &&
+                    nextBounds.Left <= plat.Right &&
+                    nextBounds.Bottom > plat.Top &&
+                    nextBounds.Top < plat.Bottom)
+            {
+                    nextPosition.X = plat.Right;
+                    velocity.X = 0;
+                }
             }
         }
 
