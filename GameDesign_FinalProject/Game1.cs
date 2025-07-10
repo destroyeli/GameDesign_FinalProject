@@ -13,6 +13,8 @@ namespace GameDesign_FinalProject
         Hero hero;
         Texture2D heroIdle, heroRun, heroJump, heroFall;
 
+        Enemy enemy;
+
         GamePlatform[] platform;
         Texture2D platformTexture;
         Rectangle platformDisplay, platformSource;
@@ -53,12 +55,15 @@ namespace GameDesign_FinalProject
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
+
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+
             _graphics.PreferredBackBufferHeight = screenHeight;
             _graphics.PreferredBackBufferWidth = screenWidth;
             _graphics.ApplyChanges();
 
+            enemy = new Enemy(this, new Vector2(ScreenWidth, 0));
         }
 
         protected override void Initialize()
@@ -118,10 +123,10 @@ namespace GameDesign_FinalProject
 
         protected override void Update(GameTime gameTime)
         {
+
             KeyboardState key = Keyboard.GetState();
             hero.Update(gameTime, key, platform);
-
-
+            enemy.Update(gameTime);
 
             base.Update(gameTime);
         }

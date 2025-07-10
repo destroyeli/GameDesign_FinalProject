@@ -16,9 +16,6 @@ namespace GameDesign_FinalProject
         bool faceLeft = false;
         bool faceRight = true;
 
-
-
-
         Animation idleAnim, runAnim, jumpAnim, fallAnim;
         Animation currentAnim;
 
