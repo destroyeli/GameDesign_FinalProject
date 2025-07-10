@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 
 namespace GameDesign_FinalProject
 {
@@ -20,7 +21,7 @@ namespace GameDesign_FinalProject
         Hero hero;
         Texture2D heroIdle, heroRun, heroJump, heroFall;
 
-        Texture2D backgroundTexture;
+        List<Enemy> enemies = new List<Enemy>();
 
         GamePlatform[] platform;
         Texture2D platformTexture;
@@ -31,15 +32,15 @@ namespace GameDesign_FinalProject
             spriteHeight = 64;
 
         string _sceneLayout = "                    " +
-                              "                    " +
+                              "    E               " +
                               "                ^^^^" +
                               "^^^^^^           ---" +
                               "-----    ^^         " +
                               "                    " +
                               "              ^^^^^ " +
                               "               ---- " +
-                              "                --  " +
-                              "^^^^^^              " +
+                              "         E      --  " +
+                              "^^^^^^            E " +
                               "------------        " +
                               "--------------------";
         private int screenWidth = 1280;
@@ -64,8 +65,10 @@ namespace GameDesign_FinalProject
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
+
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+
             _graphics.PreferredBackBufferHeight = screenHeight;
             _graphics.PreferredBackBufferWidth = screenWidth;
             _graphics.ApplyChanges();
@@ -82,8 +85,8 @@ namespace GameDesign_FinalProject
 
             platform = new GamePlatform[_sceneLayout.Length];
             
-            Texture2D platformTexture = Content.Load<Texture2D>("Platform 9");
-            Color platformColor = Color.White;
+            platformTexture = Content.Load<Texture2D>("Platform 9");
+            platformColor = Color.White;
 
             for(int i = 0; i < _sceneLayout.Length; i++)
             {
@@ -103,6 +106,11 @@ namespace GameDesign_FinalProject
                     case '^':
                         platformSource = new Rectangle(platformTexture.Width / 6 * 0, 0, platformTexture.Width / 6, platformTexture.Height);
                         platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
+                        break;
+                    case 'E':
+                        // Create an enemy at that tile position
+                        enemies.Add(new Enemy(this, new Vector2(x, y)));
+                        platform[i] = null; // optional: no platform under enemy
                         break;
                     default:
                         platform[i] = null;
@@ -137,11 +145,13 @@ namespace GameDesign_FinalProject
 
             mainMenu = new MainMenu(titleTex, playTex, loadTex, exitTex, screenWidth);
 
-
+            foreach (Enemy e in enemies)
+                e.LoadContent();
         }
 
         protected override void Update(GameTime gameTime)
         {
+
             KeyboardState key = Keyboard.GetState();
             MouseState mouse = Mouse.GetState();
 
@@ -168,6 +178,9 @@ namespace GameDesign_FinalProject
                     break;
             }
 
+            foreach (Enemy e in enemies)
+                e.Update(gameTime, platform, hero);
+
             base.Update(gameTime);
         }
 
@@ -191,8 +204,11 @@ namespace GameDesign_FinalProject
                         _spriteBatch.Draw(p1.PlatformTexture, p1.PlatformDisplay, p1.PlatformSource, p1.PlatformColor);
                 }
 
-                hero.Draw(_spriteBatch);
-            }
+            foreach (Enemy e in enemies)
+                e.Draw(gameTime, _spriteBatch);
+
+            hero.Draw(_spriteBatch);
+
 
             _spriteBatch.End();
             base.Draw(gameTime);
