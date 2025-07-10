@@ -42,10 +42,25 @@ namespace GameDesign_FinalProject
 
         public void Update(GameTime gameTime, GamePlatform[] platforms, Hero hero)
         {
-            position += velocity;
+            float gravity = 0.5f;
+            
+            velocity.Y += gravity; // Apply gravity
+
+            if (hero.Position.X < position.X)
+                velocity.X = -1.0f;
+            else
+                velocity.X = 1.0f;
+
+            if (hero.Position.Y < position.Y)
+            {
+                if (velocity.Y == 0f)
+                {
+                    velocity.Y = -5.0f;
+                }
+            }
 
             Vector2 nextPosition = position + velocity;
-            Rectangle nextBounds = new Rectangle((int)nextPosition.X, (int)nextPosition.Y, 150, 100);
+            Rectangle nextBounds = new Rectangle((int)nextPosition.X, (int)nextPosition.Y, (int)spriteWidth, (int)spriteHeight);
             Rectangle currentBounds = PositionRectangle;
 
             bool onPlatform = false;
@@ -55,41 +70,13 @@ namespace GameDesign_FinalProject
                 if (p == null) continue;
                 Rectangle plat = p.PlatformDisplay;
 
-
-
-
-                if (hero.Position.X < position.X)
-                {
-                    velocity.X = -1.0f;
-                }
-
-                else
-                {
-                    velocity.X = 1.0f;
-                }
-
-                if (hero.Position.Y < position.Y)
-                {
-                    if(velocity.Y == 0f)
-                    {
-                        velocity.Y = -5.0f;
-                    }
-
-                    if (velocity.Y < 0f)
-                    {
-                        velocity.Y += 4.0f; // Apply gravity
-                    }
-                }
-
-                
-
                 // === Top Collision (landing on platform) ===
                 if (currentBounds.Bottom <= plat.Top &&
                     nextBounds.Bottom >= plat.Top &&
                     nextBounds.Right > plat.Left &&
                     nextBounds.Left < plat.Right)
                 {
-                    nextPosition.Y = plat.Top - currentBounds.Height;
+                    nextPosition.Y = plat.Top - spriteHeight;
                     velocity.Y = 0;
                     onPlatform = true;
                 }
@@ -101,7 +88,7 @@ namespace GameDesign_FinalProject
                     nextBounds.Left < plat.Right)
                 {
                     nextPosition.Y = plat.Bottom;
-                    velocity.Y = 2f; // push down enough to resume falling
+                    velocity.Y = 0; 
                 }
 
 
@@ -111,7 +98,7 @@ namespace GameDesign_FinalProject
                     nextBounds.Bottom > plat.Top &&
                     nextBounds.Top < plat.Bottom)
                 {
-                    nextPosition.X = plat.Left - currentBounds.Width;
+                    nextPosition.X = plat.Left - (int)spriteWidth;
                     velocity.X = 0;
                 }
 
@@ -125,7 +112,6 @@ namespace GameDesign_FinalProject
                     velocity.X = 0;
                 }
             }
-
 
             // Apply final position
             position = nextPosition;
