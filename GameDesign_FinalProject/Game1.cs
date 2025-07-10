@@ -126,7 +126,7 @@ namespace GameDesign_FinalProject
 
             KeyboardState key = Keyboard.GetState();
             hero.Update(gameTime, key, platform);
-            enemy.Update(gameTime);
+            enemy.Update(gameTime, platform, hero);
 
             base.Update(gameTime);
         }

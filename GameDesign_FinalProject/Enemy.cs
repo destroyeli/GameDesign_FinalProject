@@ -22,14 +22,14 @@ namespace GameDesign_FinalProject
             }
         }
 
-        public Enemy (Game1 root, Vector2 position)
+        public Enemy(Game1 root, Vector2 position)
         {
-            
+
             this.root = root;
-            this.position = new Vector2(root.ScreenWidth - 100, root.ScreenHeight - 250);
+            this.position = new Vector2(root.ScreenWidth - 200, root.ScreenHeight - 250);
             this.spriteWidth = 150f;
             this.spriteHeight = 100f;
-            this.velocity = new Vector2(-1.0f,5.0f);
+            this.velocity = new Vector2(0.0f, 0.0f);
             this.spriteColor = Color.White;
 
             LoadContent();
@@ -120,11 +120,17 @@ namespace GameDesign_FinalProject
                     nextBounds.Left <= plat.Right &&
                     nextBounds.Bottom > plat.Top &&
                     nextBounds.Top < plat.Bottom)
-            {
+                {
                     nextPosition.X = plat.Right;
                     velocity.X = 0;
                 }
             }
+
+
+            // Apply final position
+            position = nextPosition;
+
+            
         }
 
         public void Draw(GameTime gameTime, SpriteBatch _spriteBatch)
