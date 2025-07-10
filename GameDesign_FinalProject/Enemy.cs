@@ -12,15 +12,7 @@ namespace GameDesign_FinalProject
         private float spriteWidth;
         private Vector2 velocity;
         private Color spriteColor;
-
-        public float spriteHeight
-        {
-            get
-            {
-                float scale = spriteWidth / spriteImage.Width;
-                return spriteImage.Height * scale;
-            }
-        }
+        private float spriteHeight;
 
         public Rectangle PositionRectangle
         {
@@ -32,9 +24,11 @@ namespace GameDesign_FinalProject
 
         public Enemy (Game1 root, Vector2 position)
         {
+            
             this.root = root;
-            this.position = position;
+            this.position = new Vector2(root.ScreenWidth - 100, root.ScreenHeight - 250);
             this.spriteWidth = 150f;
+            this.spriteHeight = 100f;
             this.velocity = new Vector2(-1.0f,5.0f);
             this.spriteColor = Color.White;
 

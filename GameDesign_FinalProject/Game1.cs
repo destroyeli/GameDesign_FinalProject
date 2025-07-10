@@ -117,7 +117,7 @@ namespace GameDesign_FinalProject
 
             hero = new Hero(heroIdle, heroRun, heroJump, heroFall);
 
-
+            enemy.LoadContent();
 
         }
 
@@ -144,6 +144,7 @@ namespace GameDesign_FinalProject
             }
 
             hero.Draw(_spriteBatch);
+            enemy.Draw(gameTime ,_spriteBatch);
 
             _spriteBatch.End();
             base.Draw(gameTime);
