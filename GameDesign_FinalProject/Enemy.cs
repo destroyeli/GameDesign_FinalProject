@@ -7,8 +7,8 @@ namespace GameDesign_FinalProject
     internal class Enemy
     {
         private Game1 root;
-        private Vector2 position;
-        private Texture2D spriteImage;
+        protected Vector2 position;
+        protected Texture2D spriteImage;
         private float spriteWidth;
         private Vector2 velocity;
         private Color spriteColor;
@@ -26,7 +26,7 @@ namespace GameDesign_FinalProject
         {
 
             this.root = root;
-            this.position = new Vector2(root.ScreenWidth - 200, root.ScreenHeight - 250);
+            this.position = position;
             this.spriteWidth = 150f;
             this.spriteHeight = 100f;
             this.velocity = new Vector2(0.0f, 0.0f);
@@ -51,13 +51,7 @@ namespace GameDesign_FinalProject
             else
                 velocity.X = 1.0f;
 
-            if (hero.Position.Y < position.Y)
-            {
-                if (velocity.Y == 0f)
-                {
-                    velocity.Y = -5.0f;
-                }
-            }
+            
 
             Vector2 nextPosition = position + velocity;
             Rectangle nextBounds = new Rectangle((int)nextPosition.X, (int)nextPosition.Y, (int)spriteWidth, (int)spriteHeight);

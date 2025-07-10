@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 
 namespace GameDesign_FinalProject
 {
@@ -13,7 +14,7 @@ namespace GameDesign_FinalProject
         Hero hero;
         Texture2D heroIdle, heroRun, heroJump, heroFall;
 
-        Enemy enemy;
+        List<Enemy> enemies = new List<Enemy>();
 
         GamePlatform[] platform;
         Texture2D platformTexture;
@@ -24,15 +25,15 @@ namespace GameDesign_FinalProject
             spriteHeight = 64;
 
         string _sceneLayout = "                    " +
-                              "                    " +
+                              "    E               " +
                               "                ^^^^" +
                               "^^^^^^           ---" +
                               "-----   ^^^         " +
                               "                    " +
                               "              ^^^^^ " +
                               "               ---- " +
-                              "                --  " +
-                              "^^^^^^              " +
+                              "         E      --  " +
+                              "^^^^^^            E " +
                               "------------        " +
                               "--------------------";
         private int screenWidth = 1280;
@@ -63,7 +64,6 @@ namespace GameDesign_FinalProject
             _graphics.PreferredBackBufferWidth = screenWidth;
             _graphics.ApplyChanges();
 
-            enemy = new Enemy(this, new Vector2(ScreenWidth, 0));
         }
 
         protected override void Initialize()
@@ -73,8 +73,8 @@ namespace GameDesign_FinalProject
 
             platform = new GamePlatform[_sceneLayout.Length];
             
-            Texture2D platformTexture = Content.Load<Texture2D>("Platform 9");
-            Color platformColor = Color.White;
+            platformTexture = Content.Load<Texture2D>("Platform 9");
+            platformColor = Color.White;
 
             for(int i = 0; i < _sceneLayout.Length; i++)
             {
@@ -94,6 +94,11 @@ namespace GameDesign_FinalProject
                     case '^':
                         platformSource = new Rectangle(platformTexture.Width / 6 * 0, 0, platformTexture.Width / 6, platformTexture.Height);
                         platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
+                        break;
+                    case 'E':
+                        // Create an enemy at that tile position
+                        enemies.Add(new Enemy(this, new Vector2(x, y)));
+                        platform[i] = null; // optional: no platform under enemy
                         break;
                     default:
                         platform[i] = null;
@@ -117,7 +122,8 @@ namespace GameDesign_FinalProject
 
             hero = new Hero(heroIdle, heroRun, heroJump, heroFall);
 
-            enemy.LoadContent();
+            foreach (Enemy e in enemies)
+                e.LoadContent();
 
         }
 
@@ -126,7 +132,8 @@ namespace GameDesign_FinalProject
 
             KeyboardState key = Keyboard.GetState();
             hero.Update(gameTime, key, platform);
-            enemy.Update(gameTime, platform, hero);
+            foreach (Enemy e in enemies)
+                e.Update(gameTime, platform, hero);
 
             base.Update(gameTime);
         }
@@ -141,10 +148,14 @@ namespace GameDesign_FinalProject
                 if(p1 == null)
                     continue;
                 _spriteBatch.Draw(p1.PlatformTexture, p1.PlatformDisplay, p1.PlatformSource, p1.PlatformColor);
+
             }
 
+            foreach (Enemy e in enemies)
+                e.Draw(gameTime, _spriteBatch);
+
             hero.Draw(_spriteBatch);
-            enemy.Draw(gameTime ,_spriteBatch);
+
 
             _spriteBatch.End();
             base.Draw(gameTime);
