@@ -10,13 +10,22 @@ namespace GameDesign_FinalProject
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        enum GameState { MainMenu, Playing, Loading }
+        GameState currentGameState = GameState.MainMenu;
+
+        MainMenu mainMenu;
+        Texture2D titleTex, playTex, loadTex, exitTex;
+
+
         Hero hero;
         Texture2D heroIdle, heroRun, heroJump, heroFall;
 
+        Texture2D backgroundTexture;
+
         GamePlatform[] platform;
         Texture2D platformTexture;
-        Rectangle platformDisplay, platformSource;
-        Color platformColor;
+        Rectangle platformDisplay, platformSource, backgroundRec;
+        Color platformColor, backgroundColor;
 
         int spriteWidth = 64, 
             spriteHeight = 64;
@@ -25,7 +34,7 @@ namespace GameDesign_FinalProject
                               "                    " +
                               "                ^^^^" +
                               "^^^^^^           ---" +
-                              "-----   ^^^         " +
+                              "-----    ^^         " +
                               "                    " +
                               "              ^^^^^ " +
                               "               ---- " +
@@ -34,6 +43,8 @@ namespace GameDesign_FinalProject
                               "------------        " +
                               "--------------------";
         private int screenWidth = 1280;
+
+
 
         public int ScreenWidth
         {
@@ -63,6 +74,9 @@ namespace GameDesign_FinalProject
 
         protected override void Initialize()
         {
+            backgroundRec = new Rectangle(0, 0, Window.ClientBounds.Width, Window.ClientBounds.Height);
+            backgroundColor = Color.White;
+
             int borderWidth = Window.ClientBounds.Width;
             int borderHeight = Window.ClientBounds.Height;
 
@@ -104,14 +118,24 @@ namespace GameDesign_FinalProject
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            backgroundTexture = Content.Load<Texture2D>("Background1");
+
             // Load hero textures
-            heroIdle = Content.Load<Texture2D>("Knight_Idle");
-            heroRun = Content.Load<Texture2D>("Knight_run_crop");
-            heroJump = Content.Load<Texture2D>("knight_jump_crop");
-            heroFall = Content.Load<Texture2D>("Knight_fall_crop");
+            heroIdle = Content.Load<Texture2D>("eli_Idle");
+            heroRun = Content.Load<Texture2D>("eli_walk");
+            heroJump = Content.Load<Texture2D>("eli_jump");
+            heroFall = Content.Load<Texture2D>("eli_fall");
+            Texture2D heroSprint = Content.Load<Texture2D>("eli_sprint"); // ← your sprint spritesheet
+            hero = new Hero(heroIdle, heroRun, heroJump, heroFall, heroSprint);
 
-            hero = new Hero(heroIdle, heroRun, heroJump, heroFall);
 
+
+            titleTex = Content.Load<Texture2D>("Home Screen");
+            playTex = Content.Load<Texture2D>("PLAY");
+            loadTex = Content.Load<Texture2D>("Load");
+            exitTex = Content.Load<Texture2D>("Exit");
+
+            mainMenu = new MainMenu(titleTex, playTex, loadTex, exitTex, screenWidth);
 
 
         }
@@ -119,29 +143,60 @@ namespace GameDesign_FinalProject
         protected override void Update(GameTime gameTime)
         {
             KeyboardState key = Keyboard.GetState();
-            hero.Update(gameTime, key, platform);
+            MouseState mouse = Mouse.GetState();
 
+            switch (currentGameState)
+            {
+                case GameState.MainMenu:
+                    mainMenu.Update(mouse);
 
+                    if (mainMenu.PlayClicked)
+                        currentGameState = GameState.Playing;
+                    else if (mainMenu.LoadClicked)
+                        currentGameState = GameState.Loading;
+                    else if (mainMenu.ExitClicked)
+                        Exit(); // Quit the game
+                    break;
+
+                case GameState.Playing:
+                    hero.Update(gameTime, key, platform);
+                    break;
+
+                case GameState.Loading:
+                    // You can implement your loading logic here
+                    currentGameState = GameState.Playing;
+                    break;
+            }
 
             base.Update(gameTime);
         }
+
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             _spriteBatch.Begin();
 
-            foreach(GamePlatform p1 in platform)
-            {
-                if(p1 == null)
-                    continue;
-                _spriteBatch.Draw(p1.PlatformTexture, p1.PlatformDisplay, p1.PlatformSource, p1.PlatformColor);
-            }
+            _spriteBatch.Draw(backgroundTexture, backgroundRec, backgroundColor);
 
-            hero.Draw(_spriteBatch);
+            if (currentGameState == GameState.MainMenu)
+            {
+                mainMenu.Draw(_spriteBatch);
+            }
+            else if (currentGameState == GameState.Playing)
+            {
+                foreach (GamePlatform p1 in platform)
+                {
+                    if (p1 != null)
+                        _spriteBatch.Draw(p1.PlatformTexture, p1.PlatformDisplay, p1.PlatformSource, p1.PlatformColor);
+                }
+
+                hero.Draw(_spriteBatch);
+            }
 
             _spriteBatch.End();
             base.Draw(gameTime);
         }
+
     }
 }

@@ -16,6 +16,7 @@ namespace GameDesign_FinalProject
         bool faceLeft = false;
         bool faceRight = true;
 
+        Animation sprintAnim;
 
 
 
@@ -24,17 +25,19 @@ namespace GameDesign_FinalProject
 
         SpriteEffects flip = SpriteEffects.None;
 
-        public Hero(Texture2D idle, Texture2D run, Texture2D jump, Texture2D fall)
+        public Hero(Texture2D idle, Texture2D run, Texture2D jump, Texture2D fall, Texture2D sprint)
         {
             Position = new Vector2(100, 300); // starting position
 
-            idleAnim = new Animation(idle, 8, 0.15f);  // 8 idle frames
-            runAnim = new Animation(run, 7, 0.08f);   // example: 6 run frames
-            jumpAnim = new Animation(jump, 3, 0.12f);  // example: 4 jump frames
-            fallAnim = new Animation(fall, 4, 0.3f);   // example: 2 fall frames
+            idleAnim = new Animation(idle, 7, 0.15f);
+            runAnim = new Animation(run, 7, normalRunInterval);
+            jumpAnim = new Animation(jump, 7, 0.12f);
+            fallAnim = new Animation(fall, 4, 0.3f);
 
+            sprintAnim = new Animation(sprint, 7, sprintRunInterval); // ← NEW!
             currentAnim = idleAnim;
         }
+
 
         public void Update(GameTime gameTime, KeyboardState key, GamePlatform[] platforms)
         {
@@ -44,25 +47,24 @@ namespace GameDesign_FinalProject
 
             if (isSprinting)
             {
-                moveSpeed *= 2f; // Sprint speed
-                runAnim.Interval = sprintRunInterval; // faster run animation
+                moveSpeed *= 2f;
             }
-            else
-            {
-                runAnim.Interval = normalRunInterval; // normal speed
-            }
+
 
 
             Velocity.X = 0;
 
             // Run controls
+            // Movement & animation logic
             if (key.IsKeyDown(Keys.D) || key.IsKeyDown(Keys.Right))
             {
                 Velocity.X = moveSpeed;
                 flip = SpriteEffects.None;
 
                 if (!IsJumping)
-                    currentAnim = runAnim;
+                {
+                    currentAnim = isSprinting ? sprintAnim : runAnim;
+                }
 
                 faceRight = true;
                 faceLeft = false;
@@ -73,16 +75,24 @@ namespace GameDesign_FinalProject
                 flip = SpriteEffects.FlipHorizontally;
 
                 if (!IsJumping)
-                    currentAnim = runAnim;
+                {
+                    currentAnim = isSprinting ? sprintAnim : runAnim;
+                }
 
                 faceLeft = true;
                 faceRight = false;
             }
             else
             {
+                // ✅ No movement key is pressed
+                Velocity.X = 0;
+
                 if (!IsJumping)
+                {
                     currentAnim = idleAnim;
+                }
             }
+
 
             // Jump
             if (key.IsKeyDown(Keys.Space) && !IsJumping)
@@ -172,7 +182,7 @@ namespace GameDesign_FinalProject
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            currentAnim.Draw(spriteBatch, Position, flip, 150, 100); // Resize to 150x100
+            currentAnim.Draw(spriteBatch, Position, flip, 100, 100); // Resize to 150x100
         }
 
         public Rectangle BoundingBox
