@@ -21,10 +21,8 @@ namespace GameDesign_FinalProject
                 return new Rectangle((int)position.X, (int)position.Y, (int)spriteWidth, (int)spriteHeight);
             }
         }
-
         public Enemy(Game1 root, Vector2 position)
         {
-
             this.root = root;
             this.position = position;
             this.spriteWidth = 150f;
@@ -109,7 +107,6 @@ namespace GameDesign_FinalProject
 
             // Apply final position
             position = nextPosition;
-
             
         }
 
