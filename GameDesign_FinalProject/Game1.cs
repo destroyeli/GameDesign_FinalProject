@@ -216,6 +216,7 @@ namespace GameDesign_FinalProject //sample
                 case GameState.Playing:
                     hero.CheckEnemyCollision(enemies);
                     hero.Update(gameTime, key, platform, mouse);
+                    hero.CheckProjectileEnemyCollision(enemies);
 
                     if (hero.DeathComplete)
                     {
