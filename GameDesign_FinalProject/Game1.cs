@@ -99,7 +99,7 @@ namespace GameDesign_FinalProject //sample
             stages = new List<string>()
             {
                 // Stage 1 layout
-                "                    " +
+                "                   E" +
                 "    E            C  " +
                 "  C             2111" +
                 "111112           777" +
@@ -108,7 +108,7 @@ namespace GameDesign_FinalProject //sample
                 "              211111" +
                 "                7777" +
                 "          E         " +
-                "111113  C           " +
+                "111113  C        E  " +
                 "666664111113        " +
                 "66666666666411111111",
 
