@@ -166,10 +166,7 @@ namespace GameDesign_FinalProject //sample
             Texture2D heroDeath = Content.Load<Texture2D>("eli_death_7");
             hero = new Hero(heroIdle, heroRun, heroJump, heroFall, heroSprint, heroShoot, heroHit, heroDeath, projectileTexture);
 
-            Texture2D heroShoot = Content.Load<Texture2D>("eli_shoot");
-            Texture2D heroHit = Content.Load<Texture2D>("eli_hit");
-            Texture2D heroDeath = Content.Load<Texture2D>("eli_death_7");
-            hero = new Hero(heroIdle, heroRun, heroJump, heroFall, heroSprint, heroShoot, heroHit, heroDeath);
+            
 
 
 
@@ -183,7 +180,7 @@ namespace GameDesign_FinalProject //sample
             collectibles.Add(new Collectible(item3Tex, new Vector2(500, 500)));
 
 
-            titleTex = Content.Load<Texture2D>("Home Screen");
+            titleTex = Content.Load<Texture2D>("Home Screen (1)");
             playTex = Content.Load<Texture2D>("PLAY");
             loadTex = Content.Load<Texture2D>("Load");
             exitTex = Content.Load<Texture2D>("Exit");
@@ -254,7 +251,26 @@ namespace GameDesign_FinalProject //sample
 
             foreach(Projectile p in projectiles)
             {
-                p.Update();
+                p.Update(gameTime);
+            }
+
+
+            //mark
+            for (int i = enemies.Count - 1; i >= 0; i--)
+            {
+                Enemy enemy = enemies[i];
+
+                for (int j = hero.Projectiles.Count - 1; j >= 0; j--)
+                {
+                    Projectile projectile = hero.Projectiles[j];
+
+                    if (enemy.PositionRectangle.Intersects(projectile.BoundingBox))
+                    {
+                        enemies.RemoveAt(i); // Remove enemy
+                        hero.Projectiles.RemoveAt(j); // Remove bullet
+                        break; // Break out of projectile loop once enemy is hit
+                    }
+                }
             }
             base.Update(gameTime);
         }
@@ -286,7 +302,7 @@ namespace GameDesign_FinalProject //sample
                 foreach (var collectible in collectibles)
                     collectible.Draw(_spriteBatch);
 
-                hero.Draw(_spriteBatch);
+               
                 
             hero.Draw(_spriteBatch, gameTime);
             }
@@ -301,66 +317,7 @@ namespace GameDesign_FinalProject //sample
 
         }
 
-        private void ResetGame()
-        {
-            // Clear old enemies
-            enemies.Clear();
-
-            // Reset platforms
-            for (int i = 0; i < _sceneLayout.Length; i++)
-            {
-                char tile = _sceneLayout[i];
-                int x = (i % 20) * spriteWidth;
-                int y = (i / 20) * spriteHeight;
-                Rectangle platformDisplay = new Rectangle(x, y, spriteWidth, spriteHeight);
-                Rectangle platformSource;
-
-                switch (tile)
-                {
-                    case '1':
-                        platformSource = new Rectangle(platformTexture.Width / 7 * 0, 0, platformTexture.Width / 7, platformTexture.Height);
-                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
-                        break;
-                    case '2':
-                        platformSource = new Rectangle(platformTexture.Width / 7 * 1, 0, platformTexture.Width / 7, platformTexture.Height);
-                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
-                        break;
-                    case '3':
-                        platformSource = new Rectangle(platformTexture.Width / 7 * 2, 0, platformTexture.Width / 7, platformTexture.Height);
-                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
-                        break;
-                    case '4':
-                        platformSource = new Rectangle(platformTexture.Width / 7 * 3, 0, platformTexture.Width / 7, platformTexture.Height);
-                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
-                        break;
-                    case '6':
-                        platformSource = new Rectangle(platformTexture.Width / 7 * 5, 0, platformTexture.Width / 7, platformTexture.Height);
-                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
-                        break;
-                    case '7':
-                        platformSource = new Rectangle(platformTexture.Width / 7 * 6, 0, platformTexture.Width / 7, platformTexture.Height);
-                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
-                        break;
-                    case 'E':
-                        enemies.Add(new Enemy(this, new Vector2(x, y)));
-                        platform[i] = null;
-                        break;
-                    default:
-                        platform[i] = null;
-                        break;
-                }
-            }
-
-            foreach (Enemy e in enemies)
-                e.LoadContent();
-
-            // Recreate hero
-            hero = new Hero(heroIdle, heroRun, heroJump, heroFall,
-                            Content.Load<Texture2D>("eli_sprint"),
-                            Content.Load<Texture2D>("eli_shoot"),
-                            Content.Load<Texture2D>("eli_hit"),
-                            Content.Load<Texture2D>("eli_death_7"));
-        }
+        
 
 
         private void ResetGame()
