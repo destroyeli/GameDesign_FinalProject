@@ -153,7 +153,9 @@ namespace GameDesign_FinalProject
             heroJump = Content.Load<Texture2D>("eli_jump");
             heroFall = Content.Load<Texture2D>("eli_fall");
             Texture2D heroSprint = Content.Load<Texture2D>("eli_sprint"); // ← your sprint spritesheet
-            hero = new Hero(heroIdle, heroRun, heroJump, heroFall, heroSprint);
+            Texture2D heroShoot = Content.Load<Texture2D>("eli_shoot");
+            hero = new Hero(heroIdle, heroRun, heroJump, heroFall, heroSprint, heroShoot);
+
 
 
 
@@ -188,7 +190,8 @@ namespace GameDesign_FinalProject
                     break;
 
                 case GameState.Playing:
-                    hero.Update(gameTime, key, platform);
+                    hero.Update(gameTime, key, platform, mouse);
+
                     break;
 
                 case GameState.Loading:

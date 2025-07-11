@@ -8,6 +8,5 @@ namespace GameDesign_FinalProject
 {
     internal class Projectile
     {
-
     }
 }
