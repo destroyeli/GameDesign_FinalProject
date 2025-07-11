@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
 using System.Collections.Generic;
 
 namespace GameDesign_FinalProject //sample
@@ -20,9 +19,11 @@ namespace GameDesign_FinalProject //sample
         MainMenu mainMenu;
         Texture2D titleTex, playTex, loadTex, exitTex;
 
+        private List<Projectile> projectiles;
+        private Texture2D projectileTexture;
 
         Hero hero;
-        Texture2D heroIdle, heroRun, heroJump, heroFall;
+        Texture2D heroIdle, heroRun, heroJump, heroFall, heroShoot;
 
         List<Enemy> enemies = new List<Enemy>();
 
@@ -40,10 +41,10 @@ namespace GameDesign_FinalProject //sample
                               "    E               " +
                               "                2111" +
                               "111112           777" +
-                              "77777    22         " +
+                              "77777    22     E   " +
                               "                    " +
                               "              21111 " +
-                              "    E          7777 " +
+                              "               7777 " +
                               "                    " +
                               "111113          E   " +
                               "666664111113        " +
@@ -93,6 +94,8 @@ namespace GameDesign_FinalProject //sample
 
             platformTexture = Content.Load<Texture2D>("Platform");
             platformColor = Color.White;
+
+            projectiles = new List<Projectile>();
 
             for (int i = 0; i < _sceneLayout.Length; i++)
             {
@@ -148,6 +151,8 @@ namespace GameDesign_FinalProject //sample
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            projectileTexture = Content.Load<Texture2D>("bullet_final");
+
             backgroundTexture = Content.Load<Texture2D>("Background1");
 
             // Load hero textures
@@ -155,7 +160,12 @@ namespace GameDesign_FinalProject //sample
             heroRun = Content.Load<Texture2D>("eli_walk");
             heroJump = Content.Load<Texture2D>("eli_jump");
             heroFall = Content.Load<Texture2D>("eli_fall");
+            heroShoot = Content.Load<Texture2D>("eli_shoot"); // ← your shoot spritesheet
             Texture2D heroSprint = Content.Load<Texture2D>("eli_sprint"); // ← your sprint spritesheet
+            Texture2D heroHit = Content.Load<Texture2D>("eli_hit");
+            Texture2D heroDeath = Content.Load<Texture2D>("eli_death_7");
+            hero = new Hero(heroIdle, heroRun, heroJump, heroFall, heroSprint, heroShoot, heroHit, heroDeath, projectileTexture);
+
             Texture2D heroShoot = Content.Load<Texture2D>("eli_shoot");
             Texture2D heroHit = Content.Load<Texture2D>("eli_hit");
             Texture2D heroDeath = Content.Load<Texture2D>("eli_death_7");
@@ -210,6 +220,11 @@ namespace GameDesign_FinalProject //sample
                     hero.CheckEnemyCollision(enemies);
                     hero.Update(gameTime, key, platform, mouse);
 
+                    if (hero.DeathComplete)
+                    {
+                        currentGameState = GameState.MainMenu;
+                    }
+
                     foreach (var collectible in collectibles)
                     {
                         if (!collectible.IsCollected && hero.BoundingBox.Intersects(collectible.BoundingBox))
@@ -237,6 +252,10 @@ namespace GameDesign_FinalProject //sample
             foreach (Enemy e in enemies)
                 e.Update(gameTime, platform, hero);
 
+            foreach(Projectile p in projectiles)
+            {
+                p.Update();
+            }
             base.Update(gameTime);
         }
 
@@ -247,6 +266,7 @@ namespace GameDesign_FinalProject //sample
             _spriteBatch.Begin();
 
             _spriteBatch.Draw(backgroundTexture, backgroundRec, backgroundColor);
+
 
             if (currentGameState == GameState.MainMenu)
             {
@@ -267,9 +287,14 @@ namespace GameDesign_FinalProject //sample
                     collectible.Draw(_spriteBatch);
 
                 hero.Draw(_spriteBatch);
+                
+            hero.Draw(_spriteBatch, gameTime);
             }
 
-
+            foreach(Projectile p in projectiles)
+            {
+                p.Draw(gameTime, _spriteBatch);
+            }
 
             _spriteBatch.End();
             base.Draw(gameTime);
@@ -335,6 +360,69 @@ namespace GameDesign_FinalProject //sample
                             Content.Load<Texture2D>("eli_shoot"),
                             Content.Load<Texture2D>("eli_hit"),
                             Content.Load<Texture2D>("eli_death_7"));
+        }
+
+
+        private void ResetGame()
+        {
+            // Clear old enemies
+            enemies.Clear();
+
+            // Reset platforms
+            for (int i = 0; i < _sceneLayout.Length; i++)
+            {
+                char tile = _sceneLayout[i];
+                int x = (i % 20) * spriteWidth;
+                int y = (i / 20) * spriteHeight;
+                Rectangle platformDisplay = new Rectangle(x, y, spriteWidth, spriteHeight);
+                Rectangle platformSource;
+
+                switch (tile)
+                {
+                    case '1':
+                        platformSource = new Rectangle(platformTexture.Width / 7 * 0, 0, platformTexture.Width / 7, platformTexture.Height);
+                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
+                        break;
+                    case '2':
+                        platformSource = new Rectangle(platformTexture.Width / 7 * 1, 0, platformTexture.Width / 7, platformTexture.Height);
+                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
+                        break;
+                    case '3':
+                        platformSource = new Rectangle(platformTexture.Width / 7 * 2, 0, platformTexture.Width / 7, platformTexture.Height);
+                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
+                        break;
+                    case '4':
+                        platformSource = new Rectangle(platformTexture.Width / 7 * 3, 0, platformTexture.Width / 7, platformTexture.Height);
+                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
+                        break;
+                    case '6':
+                        platformSource = new Rectangle(platformTexture.Width / 7 * 5, 0, platformTexture.Width / 7, platformTexture.Height);
+                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
+                        break;
+                    case '7':
+                        platformSource = new Rectangle(platformTexture.Width / 7 * 6, 0, platformTexture.Width / 7, platformTexture.Height);
+                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
+                        break;
+                    case 'E':
+                        enemies.Add(new Enemy(this, new Vector2(x, y)));
+                        platform[i] = null;
+                        break;
+                    default:
+                        platform[i] = null;
+                        break;
+                }
+            }
+
+            foreach (Enemy e in enemies)
+                e.LoadContent();
+
+            // Recreate hero
+            hero = new Hero(heroIdle, heroRun, heroJump, heroFall,
+                            Content.Load<Texture2D>("eli_sprint"),
+                            Content.Load<Texture2D>("eli_shoot"),
+                            Content.Load<Texture2D>("eli_hit"),
+                            Content.Load<Texture2D>("eli_death_7"),
+                            projectileTexture);
         }
 
     }
