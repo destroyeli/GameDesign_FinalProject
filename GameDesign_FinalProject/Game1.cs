@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media; //song
 using System.Collections.Generic;
 
 namespace GameDesign_FinalProject //sample
@@ -16,6 +17,7 @@ namespace GameDesign_FinalProject //sample
         private SpriteFont font; // For drawing 0/3 as text
         private Texture2D collectedBanner; // For drawing "Item Collected" banner
 
+        Song song;
 
         enum GameState { MainMenu, Playing, Loading }
         GameState currentGameState = GameState.MainMenu;
@@ -115,12 +117,12 @@ namespace GameDesign_FinalProject //sample
                 // Stage 2 layout (edit this as you want)
                 "                    " +
                 "                    " +
-                "                    " +
+                "         E           " +
                 "      21111112      " +
                 "       777777       " +
                 "                    " +
                 "   21112     21112  " +
-                "    777       777 E " +
+                "    777       777   " +
                 "                    " +
                 "                    " +
                 "11111111111111111111" +
@@ -185,6 +187,10 @@ namespace GameDesign_FinalProject //sample
 
             foreach (Enemy e in enemies)
                 e.LoadContent();
+
+            song = Content.Load<Song>("Audios/StageSong");
+            MediaPlayer.Play(song);
+         
         }
 
         protected override void Update(GameTime gameTime)
