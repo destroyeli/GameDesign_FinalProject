@@ -289,7 +289,7 @@ namespace GameDesign_FinalProject
             foreach (var p in projectiles)
             {
                 currentAnim = fallAnim;
-                p.Update();
+                p.Update(gameTime);
             }
                 projectiles.RemoveAll(p => p.Position.X < -50 || p.Position.X > 1400);
 

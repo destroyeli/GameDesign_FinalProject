@@ -43,8 +43,8 @@ namespace GameDesign_FinalProject //sample
                               "111112           777" +
                               "77777    22     E   " +
                               "                    " +
-                              "              21111 " +
-                              "               7777 " +
+                              "               21111" +
+                              "                7777" +
                               "                    " +
                               "111113          E   " +
                               "666664111113        " +
@@ -252,7 +252,7 @@ namespace GameDesign_FinalProject //sample
 
             foreach(Projectile p in projectiles)
             {
-                p.Update();
+                p.Update(gameTime);
             }
             base.Update(gameTime);
         }

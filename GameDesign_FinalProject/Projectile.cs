@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SharpDX.Direct3D9;
+using System;
 
 namespace GameDesign_FinalProject
 {
@@ -8,6 +9,7 @@ namespace GameDesign_FinalProject
     {
         private float velocity = 10f;
         private bool goingRight;
+        private Animation anim;
 
         public Projectile(Texture2D spriteImage, Vector2 position, bool goingRight) : base(position)
         {
@@ -16,12 +18,15 @@ namespace GameDesign_FinalProject
             this.SpriteWidth = 64f;
             this.SpriteHeight = 64f;
             this.goingRight = goingRight;
+
+            anim = new Animation(spriteImage, 4, 0.1f, true); // Assuming a single frame for the projectile
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
             Position = new Vector2(Position.X + (goingRight ? velocity : -velocity), Position.Y);
 
+            anim.Update(gameTime);
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
