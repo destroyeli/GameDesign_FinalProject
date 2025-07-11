@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media; //song
@@ -18,7 +19,8 @@ namespace GameDesign_FinalProject //sample
         private Texture2D collectedBanner; // For drawing "Item Collected" banner
 
         Song song;
-
+        SoundEffect effect;
+        MouseState previousMouseState;
         enum GameState { MainMenu, Playing, Loading }
         GameState currentGameState = GameState.MainMenu;
 
@@ -190,7 +192,10 @@ namespace GameDesign_FinalProject //sample
 
             song = Content.Load<Song>("Audios/StageSong");
             MediaPlayer.Play(song);
-         
+
+            effect = Content.Load<SoundEffect>("Audios/Pewpew");
+
+            
         }
 
         protected override void Update(GameTime gameTime)
@@ -221,6 +226,11 @@ namespace GameDesign_FinalProject //sample
                     hero.Update(gameTime, key, platform, mouse);
                     hero.CheckProjectileEnemyCollision(enemies);
 
+                    if (mouse.LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Released)
+                    {
+                        effect.Play();
+                    }
+
                     if (hero.DeathComplete)
                     {
                         currentGameState = GameState.MainMenu;
@@ -231,7 +241,7 @@ namespace GameDesign_FinalProject //sample
                         if (!collectible.IsCollected && hero.BoundingBox.Intersects(collectible.BoundingBox))
                         {
                             collectible.IsCollected = true;
-                            // Optional: Add score or sound effect here
+                           
                         }
 
                         collectible.Update(gameTime);
@@ -294,6 +304,7 @@ namespace GameDesign_FinalProject //sample
                     }
                 }
             }
+            previousMouseState = mouse;
             base.Update(gameTime);
         }
 
