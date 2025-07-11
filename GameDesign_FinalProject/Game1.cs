@@ -34,21 +34,25 @@ namespace GameDesign_FinalProject //sample
 
         Texture2D backgroundTexture;
 
+        private List<string> stages;
+        private int currentStageIndex;
+        private string _sceneLayout;
+
         int spriteWidth = 64,
             spriteHeight = 64;
 
-        string _sceneLayout = "                    " +
-                              "    E               " +
-                              "                2111" +
-                              "111112           777" +
-                              "77777    22     E   " +
-                              "                    " +
-                              "               21111" +
-                              "                7777" +
-                              "                    " +
-                              "111113          E   " +
-                              "666664111113        " +
-                              "66666666666411111111";
+        //string _sceneLayout = "                    " +
+        //                      "    E               " +
+        //                      "                2111" +
+        //                      "111112           777" +
+        //                      "77777    22     E   " +
+        //                      "                    " +
+        //                      "               21111" +
+        //                      "                7777" +
+        //                      "          E         " +
+        //                      "111113              " +
+        //                      "666664111113        " +
+        //                      "66666666666411111111";
 
         private int screenWidth = 1280;
 
@@ -87,62 +91,46 @@ namespace GameDesign_FinalProject //sample
             backgroundRec = new Rectangle(0, 0, Window.ClientBounds.Width, Window.ClientBounds.Height);
             backgroundColor = Color.White;
 
+            stages = new List<string>()
+            {
+                // Stage 1 layout
+                "                    " +
+                "    E            C  " +
+                "  C             2111" +
+                "111112           777" +
+                "77777    22     E   " +
+                "                    " +
+                "               21111" +
+                "                7777" +
+                "          E         " +
+                "111113  C           " +
+                "666664111113        " +
+                "66666666666411111111",
+
+                // Stage 2 layout (edit this as you want)
+                "                    " +
+                "                    " +
+                "                    " +
+                "      21111112      " +
+                "       777777       " +
+                "                    " +
+                "   21112     21112  " +
+                "    777       777 E " +
+                "                    " +
+                "                    " +
+                "11111111111111111111" +
+                "66666666666666666666"
+            };
             int borderWidth = Window.ClientBounds.Width;
             int borderHeight = Window.ClientBounds.Height;
 
-            platform = new GamePlatform[_sceneLayout.Length];
 
             platformTexture = Content.Load<Texture2D>("Platform");
             platformColor = Color.White;
 
             projectiles = new List<Projectile>();
 
-            for (int i = 0; i < _sceneLayout.Length; i++)
-            {
-                char tile = _sceneLayout[i];
-                int x = (i % 20) * spriteWidth;
-                int y = (i / 20) * spriteHeight;
-                Rectangle platformDisplay = new Rectangle(x, y, spriteWidth, spriteHeight);
-                Rectangle platformSource;
-
-
-                switch (tile)
-                {
-                    case '1':
-                        platformSource = new Rectangle(platformTexture.Width / 7 * 0, 0, platformTexture.Width / 7, platformTexture.Height);
-                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
-                        break;
-                    case '2':
-                        platformSource = new Rectangle(platformTexture.Width / 7 * 1, 0, platformTexture.Width / 7, platformTexture.Height);
-                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
-                        break;
-                    case '3':
-                        platformSource = new Rectangle(platformTexture.Width / 7 * 2, 0, platformTexture.Width / 7, platformTexture.Height);
-                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
-                        break;
-                    case '4':
-                        platformSource = new Rectangle(platformTexture.Width / 7 * 3, 0, platformTexture.Width / 7, platformTexture.Height);
-                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
-                        break;
-                    case '6':
-                        platformSource = new Rectangle(platformTexture.Width / 7 * 5, 0, platformTexture.Width / 7, platformTexture.Height);
-                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
-                        break;
-                    case '7':
-                        platformSource = new Rectangle(platformTexture.Width / 7 * 6, 0, platformTexture.Width / 7, platformTexture.Height);
-                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
-                        break;
-                    case 'E':
-                        // Create an enemy at that tile position
-                        enemies.Add(new Enemy(this, new Vector2(x, y)));
-                        platform[i] = null; // optional: no platform under enemy
-                        break;
-                    default:
-                        platform[i] = null;
-                        break;
-                }
-            }
-
+            
             base.Initialize();
         }
 
@@ -204,7 +192,8 @@ namespace GameDesign_FinalProject //sample
 
                     if (mainMenu.PlayClicked)
                     {
-                        ResetGame(); // Reset the game state
+                        currentStageIndex = 0; // Start from the first stage
+                        ResetGame(stages[currentStageIndex]); // Reset the game state
                         currentGameState = GameState.Playing;
                     }
                     else if (mainMenu.LoadClicked)
@@ -239,6 +228,24 @@ namespace GameDesign_FinalProject //sample
                         currentGameState = GameState.MainMenu;
                     }
 
+                    // --- STAGE CLEAR CHECK ---
+                    bool allEnemiesDefeated = enemies.Count == 0;
+                    bool allCollected = collectibles.TrueForAll(c => c.IsCollected);
+
+                    if (allEnemiesDefeated && allCollected)
+                    {
+                        currentStageIndex++;
+
+                        if (currentStageIndex < stages.Count)
+                        {
+                            ResetGame(stages[currentStageIndex]);
+                        }
+                        else
+                        {
+                            // No more stages → back to main menu or show "You Win" screen
+                            currentGameState = GameState.MainMenu;
+                        }
+                    }
                     break;
 
                 case GameState.Loading:
@@ -318,18 +325,20 @@ namespace GameDesign_FinalProject //sample
 
         }
 
-        
 
-
-        private void ResetGame()
+        private void ResetGame(string layout)
         {
+            _sceneLayout = layout;
+            platform = new GamePlatform[_sceneLayout.Length];
+
             // Clear old enemies
             enemies.Clear();
+            collectibles.Clear();
 
             // Reset platforms
             for (int i = 0; i < _sceneLayout.Length; i++)
             {
-                char tile = _sceneLayout[i];
+               char tile = _sceneLayout[i];
                 int x = (i % 20) * spriteWidth;
                 int y = (i / 20) * spriteHeight;
                 Rectangle platformDisplay = new Rectangle(x, y, spriteWidth, spriteHeight);
@@ -363,6 +372,10 @@ namespace GameDesign_FinalProject //sample
                         break;
                     case 'E':
                         enemies.Add(new Enemy(this, new Vector2(x, y)));
+                        platform[i] = null;
+                        break;
+                    case 'C': // 'C' = Collectible spot
+                        collectibles.Add(new Collectible(Content.Load<Texture2D>("item1"), new Vector2(x, y)));
                         platform[i] = null;
                         break;
                     default:

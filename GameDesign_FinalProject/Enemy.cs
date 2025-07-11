@@ -14,19 +14,23 @@ namespace GameDesign_FinalProject
         private Color spriteColor;
         private float spriteHeight;
 
-public Rectangle PositionRectangle
-{
-    get
-    {
-        int shrinkAmount = 20; // shrink collision box by 20 pixels total (10 on each side)
-        return new Rectangle(
-            (int)position.X + shrinkAmount / 2,
-            (int)position.Y + shrinkAmount / 2,
-            (int)spriteWidth - shrinkAmount,
-            (int)spriteHeight - shrinkAmount
-        );
-    }
-}
+        private Rectangle spriteRectangle; // Visual drawing rectangle
+        private Rectangle hitboxRectangle; // Collision box
+
+        public Rectangle PositionRectangle
+        {
+            get
+            {
+                int marginX = 50;
+                int marginY = 5;
+                return new Rectangle(
+                    (int)position.X + marginX,
+                    (int)position.Y + marginY,
+                    (int)spriteWidth - 2 * marginX,
+                    (int)spriteHeight - 2 * marginY
+                );
+            }
+        }
 
         public Enemy(Game1 root, Vector2 position)
         {
@@ -59,8 +63,8 @@ public Rectangle PositionRectangle
             
 
             Vector2 nextPosition = position + velocity;
-            Rectangle nextBounds = new Rectangle((int)nextPosition.X, (int)nextPosition.Y, (int)spriteWidth, (int)spriteHeight);
             Rectangle currentBounds = PositionRectangle;
+            Rectangle nextBounds = new Rectangle(currentBounds.X + (int)velocity.X, currentBounds.Y + (int)velocity.Y, currentBounds.Width, currentBounds.Height);
 
             bool onPlatform = false;
 
@@ -119,7 +123,13 @@ public Rectangle PositionRectangle
 
         public void Draw(GameTime gameTime, SpriteBatch _spriteBatch)
         {
-            _spriteBatch.Draw(spriteImage, PositionRectangle, spriteColor);
+            Rectangle drawRect = new Rectangle((int)position.X, (int)position.Y, (int)spriteWidth, (int)spriteHeight);
+            _spriteBatch.Draw(spriteImage, drawRect, spriteColor);
+
+            Texture2D debugTex = new Texture2D(root.GraphicsDevice, 1, 1);
+            debugTex.SetData(new[] { Color.Red });
+
+            _spriteBatch.Draw(debugTex, PositionRectangle, Color.Red * 0.5f); // Semi-transparent hitbox
         }
     }
 }
