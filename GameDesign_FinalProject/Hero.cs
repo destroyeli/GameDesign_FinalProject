@@ -354,6 +354,33 @@ namespace GameDesign_FinalProject
             }
         }
 
+        public void TakeDamage()
+        {
+            if (isHit || isInvincible || isDead) return;
+
+            Health--;
+
+            if (Health <= 0)
+            {
+                isDead = true;
+                deathAnim.CurrentFrame = 0;
+                deathAnim.Timer = 0f;
+            }
+            else
+            {
+                isHit = true;
+                isInvincible = true;
+                hitTimer = hitDuration;
+                invincibilityTimer = invincibilityDuration;
+                blinkTimer = blinkInterval;
+                hitAnim.CurrentFrame = 0;
+                hitAnim.Timer = 0f;
+
+                Velocity.X = faceRight ? -5f : 5f; // Push hero away from the direction they're facing
+                Velocity.Y = -5f; // Small upward bounce
+            }
+        }
+
         public void CheckEnemyCollision(List<Enemy> enemies)
         {
             if (isHit || isInvincible || isDead) return;

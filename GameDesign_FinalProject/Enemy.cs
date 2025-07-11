@@ -13,6 +13,23 @@ namespace GameDesign_FinalProject
         private Vector2 velocity;
         private Color spriteColor;
         private float spriteHeight;
+        public int CurrentFrame => currentFrame;
+
+        public bool IsDead => isDead;
+
+        private int frameWidth = 660;
+        private int frameHeight = 780;
+
+        private int currentFrame = 0;
+        private int frameRow = 0; // 0 = walk, 1 = hit, 2 = death
+        private double animationTimer = 0;
+        private double timePerFrame = 0.15;
+
+        private int life = 2;
+        private bool isDead = false;
+        private bool isHit = false;
+        private bool isMoving = true;
+
 
         private Rectangle spriteRectangle; // Visual drawing rectangle
         private Rectangle hitboxRectangle; // Collision box
@@ -46,7 +63,10 @@ namespace GameDesign_FinalProject
 
         public void LoadContent()
         {
-            this.spriteImage = root.Content.Load<Texture2D>("1");
+            this.spriteImage = root.Content.Load<Texture2D>("Enemy1");
+
+            if (spriteImage == null)
+                System.Diagnostics.Debug.WriteLine("Enemy1.png failed to load!");
         }
 
         public void Update(GameTime gameTime, GamePlatform[] platforms, Hero hero)
@@ -56,11 +76,23 @@ namespace GameDesign_FinalProject
             velocity.Y += gravity; // Apply gravity
 
             if (hero.Position.X < position.X)
+            {
                 velocity.X = -1.0f;
-            else
+                isMoving = true;
+            }
+            else if (hero.Position.X > position.X)
+            {
                 velocity.X = 1.0f;
+                isMoving = true;
+            }
+            else
+            {
+                velocity.X = 0f;
+                isMoving = false;
+            }
 
-            
+
+
 
             Vector2 nextPosition = position + velocity;
             Rectangle currentBounds = PositionRectangle;
@@ -118,18 +150,74 @@ namespace GameDesign_FinalProject
 
             // Apply final position
             position = nextPosition;
-            
+            if (isDead)
+            {
+                frameRow = 2; // death
+                isMoving = false;
+            }
+            else if (isHit)
+            {
+                frameRow = 1; // taking damage
+            }
+            else if (isMoving)
+            {
+                frameRow = 0; // walking
+            }
+            else
+            {
+                currentFrame = 0; // Idle frame
+            }
+
+            if (isMoving || isHit || isDead)
+            {
+                animationTimer += gameTime.ElapsedGameTime.TotalSeconds;
+                if (animationTimer >= timePerFrame)
+                {
+                    currentFrame++;
+                    animationTimer = 0;
+
+                    if (frameRow == 2 && currentFrame > 3)
+                    {
+                        currentFrame = 3; // Stay at last death frame
+                    }
+                    else if (frameRow == 1 && currentFrame > 3)
+                    {
+                        currentFrame = 0;
+                        isHit = false; // Done showing hit
+                    }
+                    else if (currentFrame > 3)
+                    {
+                        currentFrame = 0;
+                    }
+                }
+            }
+
         }
 
         public void Draw(GameTime gameTime, SpriteBatch _spriteBatch)
         {
-            Rectangle drawRect = new Rectangle((int)position.X, (int)position.Y, (int)spriteWidth, (int)spriteHeight);
-            _spriteBatch.Draw(spriteImage, drawRect, spriteColor);
+            Rectangle sourceRect = new Rectangle(currentFrame * frameWidth, frameRow * frameHeight, frameWidth, frameHeight);
+            Rectangle destRect = new Rectangle((int)position.X, (int)position.Y, (int)spriteWidth, (int)spriteHeight);
+
+            _spriteBatch.Draw(spriteImage, destRect, sourceRect, spriteColor);
 
             Texture2D debugTex = new Texture2D(root.GraphicsDevice, 1, 1);
             debugTex.SetData(new[] { Color.Red });
-
-            _spriteBatch.Draw(debugTex, PositionRectangle, Color.Red * 0.5f); // Semi-transparent hitbox
+            _spriteBatch.Draw(debugTex, PositionRectangle, Color.Red * 0.5f);
         }
+
+        public void TakeDamage()
+        {
+            life--;
+            isHit = true;
+            currentFrame = 0;
+
+            if (life <= 0)
+            {
+                isDead = true;
+                currentFrame = 0;
+            }
+        }
+
     }
 }

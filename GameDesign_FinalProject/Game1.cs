@@ -7,6 +7,12 @@ namespace GameDesign_FinalProject //sample
 {
     public class Game1 : Game
     {
+        private float bossDeathTimer = 0f;
+        private bool bossDeathHandled = false;
+
+        FinalBoss finalBoss;
+        Texture2D bossWalkTex, bossHitTex, bossDeathTex;
+
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         Texture2D heartTexture;
@@ -120,8 +126,8 @@ namespace GameDesign_FinalProject //sample
                 "       777777       " +
                 "                    " +
                 "   21112     21112  " +
-                "    777       777 E " +
-                "                    " +
+                "    777       777   " +
+                "                  E " +
                 "                    " +
                 "11111111111111111111" +
                 "66666666666666666666"
@@ -174,6 +180,9 @@ namespace GameDesign_FinalProject //sample
             collectibles.Add(new Collectible(item1Tex, new Vector2(100, 128)));
             collectibles.Add(new Collectible(item2Tex, new Vector2(1064, 64)));
             collectibles.Add(new Collectible(item3Tex, new Vector2(1000, 600)));
+            bossWalkTex = Content.Load<Texture2D>("boss_walk_small");
+            bossHitTex = Content.Load<Texture2D>("boss_hit_small");
+            bossDeathTex = Content.Load<Texture2D>("boss_death_small");
 
 
             titleTex = Content.Load<Texture2D>("Home Screen (1)");
@@ -189,6 +198,43 @@ namespace GameDesign_FinalProject //sample
 
         protected override void Update(GameTime gameTime)
         {
+            if (finalBoss != null)
+            {
+                finalBoss.Update(gameTime);
+
+                // Check for projectile collision
+                for (int i = hero.Projectiles.Count - 1; i >= 0; i--)
+                {
+                    if (finalBoss.CollidesWith(hero.Projectiles[i].BoundingBox))
+                    {
+                        finalBoss.TakeDamage();
+                        hero.Projectiles.RemoveAt(i);
+                        break;
+                    }
+                }
+
+                // Damage hero if touching boss
+                if (finalBoss.CollidesWith(hero.BoundingBox))
+                {
+                    hero.TakeDamage();
+                    // Still triggers hit state
+                }
+
+                // If boss defeated, maybe trigger something
+                if (finalBoss != null && finalBoss.IsDead)
+                {
+                    bossDeathTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                    if (!bossDeathHandled && bossDeathTimer >= 1f) // wait for 1 second after anim
+                    {
+                        bossDeathHandled = true;
+                        finalBoss = null; // ✅ Remove the boss sprite from view
+                        currentGameState = GameState.MainMenu;
+                    }
+                }
+
+            }
+
 
             KeyboardState key = Keyboard.GetState();
             MouseState mouse = Mouse.GetState();
@@ -282,10 +328,18 @@ namespace GameDesign_FinalProject //sample
 
                     if (enemy.PositionRectangle.Intersects(projectile.BoundingBox))
                     {
-                        enemies.RemoveAt(i); // Remove enemy
-                        hero.Projectiles.RemoveAt(j); // Remove bullet
-                        break; // Break out of projectile loop once enemy is hit
+                        enemy.TakeDamage(); // Instead of removing immediately
+
+                      
+
+                        hero.Projectiles.RemoveAt(j);
+                        break;
                     }
+
+                }
+                if (enemy.IsDead && enemy.CurrentFrame == 3)
+                {
+                    enemies.RemoveAt(i); // ✅ remove after death anim plays
                 }
             }
             base.Update(gameTime);
@@ -354,6 +408,9 @@ namespace GameDesign_FinalProject //sample
             {
                 p.Draw(gameTime, _spriteBatch);
             }
+            if (finalBoss != null)
+                finalBoss.Draw(_spriteBatch);
+
 
             _spriteBatch.End();
             base.Draw(gameTime);
@@ -425,6 +482,19 @@ namespace GameDesign_FinalProject //sample
                             Content.Load<Texture2D>("eli_hit"),
                             Content.Load<Texture2D>("eli_death_7"),
                             projectileTexture);
+
+            // Spawn final boss only on stage 2
+            if (currentStageIndex == 1)
+            {
+                finalBoss = new FinalBoss(bossWalkTex, bossHitTex, bossDeathTex, new Vector2(1000, 550), screenWidth);
+            }
+            else
+            {
+                finalBoss = null;
+                bossDeathTimer = 0f;
+                bossDeathHandled = false;
+            }
+
         }
 
     }
