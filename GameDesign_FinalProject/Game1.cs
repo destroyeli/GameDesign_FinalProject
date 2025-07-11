@@ -357,62 +357,63 @@ namespace GameDesign_FinalProject //sample
 
             _spriteBatch.End();
             base.Draw(gameTime);
+        }
 
                 private void ResetGame(string layout)
-        {
-            _sceneLayout = layout;
-            platform = new GamePlatform[_sceneLayout.Length];
-
-            // Clear old enemies
-            enemies.Clear();
-            collectibles.Clear();
-
-            // Reset platforms
-            for (int i = 0; i < _sceneLayout.Length; i++)
-            {
-               char tile = _sceneLayout[i];
-                int x = (i % 20) * spriteWidth;
-                int y = (i / 20) * spriteHeight;
-                Rectangle platformDisplay = new Rectangle(x, y, spriteWidth, spriteHeight);
-                Rectangle platformSource;switch (tile)
                 {
-                    case '1':
-                        platformSource = new Rectangle(platformTexture.Width / 7 * 0, 0, platformTexture.Width / 7, platformTexture.Height);
-                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
-                        break;
-                    case '2':
-                        platformSource = new Rectangle(platformTexture.Width / 7 * 1, 0, platformTexture.Width / 7, platformTexture.Height);
-                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
-                        break;
-                    case '3':
-                        platformSource = new Rectangle(platformTexture.Width / 7 * 2, 0, platformTexture.Width / 7, platformTexture.Height);
-                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
-                        break;
-                    case '4':
-                        platformSource = new Rectangle(platformTexture.Width / 7 * 3, 0, platformTexture.Width / 7, platformTexture.Height);
-                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
-                        break;
-                    case '6':
-                        platformSource = new Rectangle(platformTexture.Width / 7 * 5, 0, platformTexture.Width / 7, platformTexture.Height);
-                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
-                        break;
-                    case '7':
-                        platformSource = new Rectangle(platformTexture.Width / 7 * 6, 0, platformTexture.Width / 7, platformTexture.Height);
-                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
-                        break;
-                    case 'E':
-                        enemies.Add(new Enemy(this, new Vector2(x, y)));
-                        platform[i] = null;
-                        break;
-                    case 'C': // 'C' = Collectible spot
-                        collectibles.Add(new Collectible(Content.Load<Texture2D>("item1"), new Vector2(x, y)));
-                        platform[i] = null;
-                        break;
-                    default:
-                        platform[i] = null;
-                        break;
-                }
-            }
+                    _sceneLayout = layout;
+                    platform = new GamePlatform[_sceneLayout.Length];
+
+                    // Clear old enemies
+                    enemies.Clear();
+                    collectibles.Clear();
+
+                    // Reset platforms
+                    for (int i = 0; i < _sceneLayout.Length; i++)
+                    {
+                       char tile = _sceneLayout[i];
+                        int x = (i % 20) * spriteWidth;
+                        int y = (i / 20) * spriteHeight;
+                        Rectangle platformDisplay = new Rectangle(x, y, spriteWidth, spriteHeight);
+                        Rectangle platformSource;switch (tile)
+                        {
+                            case '1':
+                                platformSource = new Rectangle(platformTexture.Width / 7 * 0, 0, platformTexture.Width / 7, platformTexture.Height);
+                                platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
+                                break;
+                            case '2':
+                                platformSource = new Rectangle(platformTexture.Width / 7 * 1, 0, platformTexture.Width / 7, platformTexture.Height);
+                                platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
+                                break;
+                            case '3':
+                                platformSource = new Rectangle(platformTexture.Width / 7 * 2, 0, platformTexture.Width / 7, platformTexture.Height);
+                                platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
+                                break;
+                            case '4':
+                                platformSource = new Rectangle(platformTexture.Width / 7 * 3, 0, platformTexture.Width / 7, platformTexture.Height);
+                                platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
+                                break;
+                            case '6':
+                                platformSource = new Rectangle(platformTexture.Width / 7 * 5, 0, platformTexture.Width / 7, platformTexture.Height);
+                                platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
+                                break;
+                            case '7':
+                                platformSource = new Rectangle(platformTexture.Width / 7 * 6, 0, platformTexture.Width / 7, platformTexture.Height);
+                                platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
+                                break;
+                            case 'E':
+                                enemies.Add(new Enemy(this, new Vector2(x, y)));
+                                platform[i] = null;
+                                break;
+                            case 'C': // 'C' = Collectible spot
+                                collectibles.Add(new Collectible(Content.Load<Texture2D>("item1"), new Vector2(x, y)));
+                                platform[i] = null;
+                                break;
+                            default:
+                                platform[i] = null;
+                                break;
+                        }
+                    }
 
             foreach (Enemy e in enemies)
                 e.LoadContent();
