@@ -18,8 +18,6 @@ namespace GameDesign_FinalProject
 
         Animation sprintAnim;
 
-
-
         Animation idleAnim, runAnim, jumpAnim, fallAnim;
         Animation currentAnim;
 
@@ -84,7 +82,7 @@ namespace GameDesign_FinalProject
             }
             else
             {
-                // ✅ No movement key is pressed
+                //  No movement key is pressed
                 Velocity.X = 0;
 
                 if (!IsJumping)

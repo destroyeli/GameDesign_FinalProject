@@ -13,6 +13,7 @@ namespace GameDesign_FinalProject
         {
             this.position = position;
         } 
+
         public Vector2 Position { get => position; set => position = value; }
         public Texture2D SpriteImage { get => spriteImage; set => spriteImage = value; }
         public float SpriteWidth { get => spriteWidth; set => spriteWidth = value; }
