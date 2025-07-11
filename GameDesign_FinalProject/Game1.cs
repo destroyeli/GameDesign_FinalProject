@@ -160,10 +160,9 @@ namespace GameDesign_FinalProject //sample
             heroFall = Content.Load<Texture2D>("eli_fall");
             heroShoot = Content.Load<Texture2D>("eli_shoot"); // ← your shoot spritesheet
             Texture2D heroSprint = Content.Load<Texture2D>("eli_sprint"); // ← your sprint spritesheet
-            Texture2D heroShoot = Content.Load<Texture2D>("eli_shoot");
             Texture2D heroHit = Content.Load<Texture2D>("eli_hit");
             Texture2D heroDeath = Content.Load<Texture2D>("eli_death_7");
-            hero = new Hero(heroIdle, heroRun, heroJump, heroFall, heroSprint, heroShoot, heroHit, heroDeath);
+            hero = new Hero(heroIdle, heroRun, heroJump, heroFall, heroSprint, heroShoot, heroHit, heroDeath, projectileTexture);
 
 
 
@@ -324,7 +323,8 @@ namespace GameDesign_FinalProject //sample
                             Content.Load<Texture2D>("eli_sprint"),
                             Content.Load<Texture2D>("eli_shoot"),
                             Content.Load<Texture2D>("eli_hit"),
-                            Content.Load<Texture2D>("eli_death_7"));
+                            Content.Load<Texture2D>("eli_death_7"),
+                            projectileTexture);
         }
 
     }

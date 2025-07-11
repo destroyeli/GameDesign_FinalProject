@@ -37,16 +37,19 @@ namespace GameDesign_FinalProject
         Animation currentAnim;
 
         bool isShooting = false;
+        bool canShoot = true;
         bool isDead = false;
         public bool DeathComplete { get; private set; } = false;
+
+        private List<Projectile> projectiles = new List<Projectile>();
+        private Texture2D projectileTexture;
 
         SpriteEffects flip = SpriteEffects.None;
 
         public Hero(Texture2D idle, Texture2D run, Texture2D jump, Texture2D fall,
-                    Texture2D sprint, Texture2D shoot, Texture2D hit, Texture2D death)
+                    Texture2D sprint, Texture2D shoot, Texture2D hit, Texture2D death, Texture2D projectileTex)
         {
             Position = new Vector2(50, 450);
-
             idleAnim = new Animation(idle, 7, 0.15f);
             runAnim = new Animation(run, 7, normalRunInterval);
             jumpAnim = new Animation(jump, 7, 0.12f);
@@ -58,6 +61,8 @@ namespace GameDesign_FinalProject
 
             currentAnim = idleAnim;
             Health = 3;
+
+            this.projectileTexture = projectileTex;
         }
 
         public void Update(GameTime gameTime, KeyboardState key, GamePlatform[] platforms, MouseState mouse)
@@ -110,20 +115,21 @@ namespace GameDesign_FinalProject
             if (mouse.LeftButton == ButtonState.Pressed && !isShooting && !IsJumping)
             {
                 isShooting = true;
-                hasFired = true; // Prevent multiple shots in one click
                 shootAnim.CurrentFrame = 0;
                 shootAnim.Timer = 0f;
                 currentAnim = shootAnim;
 
-                Vector2 bulletPos = new Vector2(Position.X + 50, Position.Y + 30); // adjust bullet start point
-                bool direction = faceRight ? true : false;
-                projectiles.Clear(); // only one bullet at a time
+                Vector2 bulletPos = new Vector2(Position.X + (faceRight ? 90 : -10), Position.Y + 30); // adjust bullet start point
+                bool direction = faceRight;
                 projectiles.Add(new Projectile(projectileTexture, bulletPos, direction));
 
+                canShoot = false; // block firing until mouse is released
+
             }
-            else if (mouse.LeftButton == ButtonState.Released)
+            if (mouse.LeftButton == ButtonState.Released)
             {
-                hasFired = false; // allow firing again
+                canShoot = true; // allow firing again
+                isShooting = false; // allow firing again
             }
 
             if (isShooting)
@@ -241,6 +247,7 @@ namespace GameDesign_FinalProject
             {
                 p.Update();
             }
+                projectiles.RemoveAll(p => p.Position.X < -50 || p.Position.X > 1400);
 
             currentAnim.Update(gameTime);
         }
@@ -249,6 +256,11 @@ namespace GameDesign_FinalProject
         {
             if (isVisible)
                 currentAnim.Draw(spriteBatch, Position, flip, 100, 100);
+
+            foreach (var p in projectiles)
+            {
+                p.Draw(spriteBatch, gameTime);
+            }
         }
 
         public Rectangle BoundingBox => new Rectangle((int)Position.X, (int)Position.Y, 150, 100);
