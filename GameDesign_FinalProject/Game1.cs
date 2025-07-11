@@ -338,12 +338,12 @@ namespace GameDesign_FinalProject //sample
                 int bannerHeight = collectedBanner.Height;
 
                 Vector2 bannerPos = new Vector2(screenWidth - bannerWidth + 350, screenHeight - bannerHeight - 680);
-                float scale = 0.4f; // 👈 Adjust this number to shrink or enlarge
+                float scale = 0.4f; 
                 _spriteBatch.Draw(collectedBanner, bannerPos, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
 
 
                 string collectedText = $"{collectedCount}/{collectibles.Count}";
-                float textScale = 1.5f; // ← Increase this to make the text larger (1.0 = normal size)
+                float textScale = 1.5f; 
 
                 Vector2 textPos = new Vector2(screenWidth - 70, screenHeight - 735);
                 _spriteBatch.DrawString(font, collectedText, textPos, Color.White, 0f, Vector2.Zero, textScale, SpriteEffects.None, 0f);

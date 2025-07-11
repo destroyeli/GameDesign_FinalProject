@@ -126,10 +126,11 @@ namespace GameDesign_FinalProject
             Rectangle drawRect = new Rectangle((int)position.X, (int)position.Y, (int)spriteWidth, (int)spriteHeight);
             _spriteBatch.Draw(spriteImage, drawRect, spriteColor);
 
-            Texture2D debugTex = new Texture2D(root.GraphicsDevice, 1, 1);
-            debugTex.SetData(new[] { Color.Red });
+            //FOR LOOKING HITBOXES
+            //Texture2D debugTex = new Texture2D(root.GraphicsDevice, 1, 1);
+            //debugTex.SetData(new[] { Color.Red });
 
-            _spriteBatch.Draw(debugTex, PositionRectangle, Color.Red * 0.5f); // Semi-transparent hitbox
+            //_spriteBatch.Draw(debugTex, PositionRectangle, Color.Red * 0.5f); // Semi-transparent hitbox
         }
     }
 }
