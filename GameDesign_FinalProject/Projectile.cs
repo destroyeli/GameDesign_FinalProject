@@ -5,19 +5,29 @@ namespace GameDesign_FinalProject
 {
     internal class Projectile : Sprite
     {
-        private Vector2 velocity;
+        private float velocity = 10f;
+        private bool goingRight;
 
-        public Projectile(Vector2 position, Vector2 velocity, Texture2D spriteImage) : base(position)
+        public Projectile(Texture2D spriteImage, Vector2 position, bool goingRight) : base(position)
         {
-            this.velocity = velocity;
+
             this.SpriteImage = spriteImage;
             this.SpriteWidth = 64f;
             this.SpriteHeight = 64f;
+            this.goingRight = goingRight;
         }
 
         public void Update()
         {
-            Position += velocity;
+            Vector2 pos = Position;
+            pos.X += goingRight ? velocity : -velocity;
+            Position = pos;
         }
+
+        public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
+        {
+            this.Draw(gameTime, spriteBatch);
+        }
+
     }
 }
