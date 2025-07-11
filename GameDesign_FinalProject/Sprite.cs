@@ -21,7 +21,8 @@ namespace GameDesign_FinalProject
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(spriteImage, PositionRectangle, Color.White);
+            if (spriteImage != null)
+                spriteBatch.Draw(spriteImage, PositionRectangle, Color.White);
         }
 
         public Rectangle PositionRectangle

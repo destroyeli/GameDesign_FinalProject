@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
 using System.Collections.Generic;
 
 namespace GameDesign_FinalProject //sample
@@ -18,9 +17,11 @@ namespace GameDesign_FinalProject //sample
         MainMenu mainMenu;
         Texture2D titleTex, playTex, loadTex, exitTex;
 
+        private List<Projectile> projectiles;
+        private Texture2D projectileTexture;
 
         Hero hero;
-        Texture2D heroIdle, heroRun, heroJump, heroFall;
+        Texture2D heroIdle, heroRun, heroJump, heroFall, heroShoot;
 
         List<Enemy> enemies = new List<Enemy>();
 
@@ -38,10 +39,10 @@ namespace GameDesign_FinalProject //sample
                               "    E               " +
                               "                2111" +
                               "111112           777" +
-                              "77777    22         " +
+                              "77777    22     E   " +
                               "                    " +
                               "              21111 " +
-                              "    E          7777 " +
+                              "               7777 " +
                               "                    " +
                               "111113          E   " +
                               "666664111113        " +
@@ -91,6 +92,8 @@ namespace GameDesign_FinalProject //sample
 
             platformTexture = Content.Load<Texture2D>("Platform");
             platformColor = Color.White;
+
+            projectiles = new List<Projectile>();
 
             for (int i = 0; i < _sceneLayout.Length; i++)
             {
@@ -146,6 +149,8 @@ namespace GameDesign_FinalProject //sample
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            projectileTexture = Content.Load<Texture2D>("bullet2");
+
             backgroundTexture = Content.Load<Texture2D>("Background1");
 
             // Load hero textures
@@ -153,6 +158,7 @@ namespace GameDesign_FinalProject //sample
             heroRun = Content.Load<Texture2D>("eli_walk");
             heroJump = Content.Load<Texture2D>("eli_jump");
             heroFall = Content.Load<Texture2D>("eli_fall");
+            heroShoot = Content.Load<Texture2D>("eli_shoot"); // ← your shoot spritesheet
             Texture2D heroSprint = Content.Load<Texture2D>("eli_sprint"); // ← your sprint spritesheet
             Texture2D heroShoot = Content.Load<Texture2D>("eli_shoot");
             Texture2D heroHit = Content.Load<Texture2D>("eli_hit");
@@ -216,6 +222,10 @@ namespace GameDesign_FinalProject //sample
             foreach (Enemy e in enemies)
                 e.Update(gameTime, platform, hero);
 
+            foreach(Projectile p in projectiles)
+            {
+                p.Update();
+            }
             base.Update(gameTime);
         }
 
@@ -226,6 +236,7 @@ namespace GameDesign_FinalProject //sample
             _spriteBatch.Begin();
 
             _spriteBatch.Draw(backgroundTexture, backgroundRec, backgroundColor);
+
 
             if (currentGameState == GameState.MainMenu)
             {
@@ -242,10 +253,13 @@ namespace GameDesign_FinalProject //sample
                 foreach (Enemy e in enemies)
                     e.Draw(gameTime, _spriteBatch);
                 
-            hero.Draw(_spriteBatch);
+            hero.Draw(_spriteBatch, gameTime);
             }
 
-
+            foreach(Projectile p in projectiles)
+            {
+                p.Draw(gameTime, _spriteBatch);
+            }
 
             _spriteBatch.End();
             base.Draw(gameTime);

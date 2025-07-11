@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Content;
 
 namespace GameDesign_FinalProject
 {
-    internal class Hero
+    internal class Hero //hero
     {
         public Vector2 Position;
         public Vector2 Velocity;
@@ -110,9 +110,20 @@ namespace GameDesign_FinalProject
             if (mouse.LeftButton == ButtonState.Pressed && !isShooting && !IsJumping)
             {
                 isShooting = true;
+                hasFired = true; // Prevent multiple shots in one click
                 shootAnim.CurrentFrame = 0;
                 shootAnim.Timer = 0f;
                 currentAnim = shootAnim;
+
+                Vector2 bulletPos = new Vector2(Position.X + 50, Position.Y + 30); // adjust bullet start point
+                bool direction = faceRight ? true : false;
+                projectiles.Clear(); // only one bullet at a time
+                projectiles.Add(new Projectile(projectileTexture, bulletPos, direction));
+
+            }
+            else if (mouse.LeftButton == ButtonState.Released)
+            {
+                hasFired = false; // allow firing again
             }
 
             if (isShooting)
@@ -226,10 +237,15 @@ namespace GameDesign_FinalProject
             if (Velocity.Y > 1f && IsJumping)
                 currentAnim = fallAnim;
 
+            foreach (var p in projectiles)
+            {
+                p.Update();
+            }
+
             currentAnim.Update(gameTime);
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             if (isVisible)
                 currentAnim.Draw(spriteBatch, Position, flip, 100, 100);
