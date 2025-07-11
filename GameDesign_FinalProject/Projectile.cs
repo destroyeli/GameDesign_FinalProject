@@ -20,14 +20,16 @@ namespace GameDesign_FinalProject
 
         public void Update()
         {
-            Vector2 pos = Position;
-            pos.X += goingRight ? velocity : -velocity;
-            Position = pos;
+            Position = new Vector2(Position.X + (goingRight ? velocity : -velocity), Position.Y);
+
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            this.Draw(gameTime, spriteBatch);
+            SpriteEffects flip = goingRight ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+
+            // ✅ Use base.Draw with flipping support
+            spriteBatch.Draw(SpriteImage, PositionRectangle, null, Color.White, 0f, Vector2.Zero, flip, 0f);
         }
 
         public Rectangle BoundingBox
