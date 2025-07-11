@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SharpDX.Direct3D9;
+using System;
 
 namespace GameDesign_FinalProject
 {
@@ -7,6 +9,7 @@ namespace GameDesign_FinalProject
     {
         private float velocity = 10f;
         private bool goingRight;
+        private Animation anim;
 
         private Animation animation;
 

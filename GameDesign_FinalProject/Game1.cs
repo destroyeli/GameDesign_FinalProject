@@ -43,8 +43,8 @@ namespace GameDesign_FinalProject //sample
                               "111112           777" +
                               "77777    22     E   " +
                               "                    " +
-                              "              21111 " +
-                              "               7777 " +
+                              "               21111" +
+                              "                7777" +
                               "                    " +
                               "111113          E   " +
                               "666664111113        " +
@@ -216,6 +216,7 @@ namespace GameDesign_FinalProject //sample
                 case GameState.Playing:
                     hero.CheckEnemyCollision(enemies);
                     hero.Update(gameTime, key, platform, mouse);
+                    hero.CheckProjectileEnemyCollision(enemies);
 
                     if (hero.DeathComplete)
                     {

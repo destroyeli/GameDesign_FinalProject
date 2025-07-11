@@ -315,6 +315,26 @@ namespace GameDesign_FinalProject
 
         public Rectangle BoundingBox => new Rectangle((int)Position.X, (int)Position.Y, 150, 100);
 
+        public void CheckProjectileEnemyCollision(List<Enemy> enemies)
+        {
+            for (int i = projectiles.Count - 1; i >= 0; i--)
+            {
+                Projectile proj = projectiles[i];
+
+                for (int j = enemies.Count - 1; j >= 0; j--)
+                {
+                    Enemy enemy = enemies[j];
+
+                    if (proj.BoundingBox.Intersects(enemy.PositionRectangle))
+                    {
+                        enemies.RemoveAt(j);         // Remove enemy
+                        projectiles.RemoveAt(i);     // Remove projectile
+                        break; // Exit inner loop — one hit per projectile
+                    }
+                }
+            }
+        }
+
         public void CheckEnemyCollision(List<Enemy> enemies)
         {
             if (isHit || isInvincible || isDead) return;
