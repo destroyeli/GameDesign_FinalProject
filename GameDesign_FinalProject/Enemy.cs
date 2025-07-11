@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace GameDesign_FinalProject
 {
-    internal class Enemy
+    internal class Enemy //try mo
     {
         private Game1 root;
         protected Vector2 position;
