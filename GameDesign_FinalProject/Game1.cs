@@ -100,7 +100,7 @@ namespace GameDesign_FinalProject //sample
             {
                 // Stage 1 layout
                 "                   E" +
-                "    E            C  " +
+                "    E            B  " +
                 "  C             2111" +
                 "111112           777" +
                 "77777    22     E   " +
@@ -108,7 +108,7 @@ namespace GameDesign_FinalProject //sample
                 "              211111" +
                 "                7777" +
                 "          E         " +
-                "111113  C        E  " +
+                "111113  L        E  " +
                 "666664111113        " +
                 "66666666666411111111",
 
@@ -409,7 +409,15 @@ namespace GameDesign_FinalProject //sample
                                 collectibles.Add(new Collectible(Content.Load<Texture2D>("item1"), new Vector2(x, y)));
                                 platform[i] = null;
                                 break;
-                            default:
+                            case 'B': //collectible but second item
+                                collectibles.Add(new Collectible(Content.Load<Texture2D>("item2"), new Vector2(x, y)));
+                                platform[i] = null;
+                                break;
+                            case 'L': //collectible but third item
+                                collectibles.Add(new Collectible(Content.Load<Texture2D>("item3"), new Vector2(x, y)));
+                                platform[i] = null;
+                                break;
+                    default:
                                 platform[i] = null;
                                 break;
                         }

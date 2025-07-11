@@ -14,8 +14,8 @@ namespace GameDesign_FinalProject
         private Color spriteColor;
         private float spriteHeight;
 
-        private Rectangle spriteRectangle; // Visual drawing rectangle
-        private Rectangle hitboxRectangle; // Collision box
+        private Rectangle spriteRectangle; 
+        private Rectangle hitboxRectangle; 
 
         public Rectangle PositionRectangle
         {
@@ -53,7 +53,7 @@ namespace GameDesign_FinalProject
         {
             float gravity = 0.5f;
             
-            velocity.Y += gravity; // Apply gravity
+            velocity.Y += gravity; // graviti
 
             if (hero.Position.X < position.X)
                 velocity.X = -1.0f;

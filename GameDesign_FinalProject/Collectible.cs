@@ -9,11 +9,11 @@ namespace GameDesign_FinalProject
         public bool IsCollected = false;
         private Animation animation;
 
-        public Rectangle BoundingBox => new Rectangle((int)Position.X, (int)Position.Y, 64, 64); // Adjust if needed
+        public Rectangle BoundingBox => new Rectangle((int)Position.X, (int)Position.Y, 64, 64); 
 
         public Collectible(Texture2D texture, Vector2 position)
         {
-            animation = new Animation(texture, 7, 0.15f); // 7-frame animation
+            animation = new Animation(texture, 7, 0.15f); 
             Position = position;
         }
 
