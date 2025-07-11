@@ -149,7 +149,7 @@ namespace GameDesign_FinalProject //sample
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            projectileTexture = Content.Load<Texture2D>("bullet2");
+            projectileTexture = Content.Load<Texture2D>("bullet_final");
 
             backgroundTexture = Content.Load<Texture2D>("Background1");
 
