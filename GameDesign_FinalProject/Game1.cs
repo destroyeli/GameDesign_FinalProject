@@ -21,6 +21,9 @@ namespace GameDesign_FinalProject //sample
         Song song;
         SoundEffect effect;
         MouseState previousMouseState;
+        SoundEffect jumpEffect;
+        KeyboardState previousKeyState;
+
         enum GameState { MainMenu, Playing, Loading }
         GameState currentGameState = GameState.MainMenu;
 
@@ -194,8 +197,9 @@ namespace GameDesign_FinalProject //sample
             MediaPlayer.Play(song);
 
             effect = Content.Load<SoundEffect>("Audios/Pewpew");
+            jumpEffect = Content.Load<SoundEffect>("Audios/Jump");
 
-            
+
         }
 
         protected override void Update(GameTime gameTime)
@@ -222,9 +226,18 @@ namespace GameDesign_FinalProject //sample
                     break;
 
                 case GameState.Playing:
+     
+                    if (key.IsKeyDown(Keys.Space) && !previousKeyState.IsKeyDown(Keys.Space))
+                    {
+                        if (!hero.IsJumping)
+                            jumpEffect.Play();
+                    }
+
                     hero.CheckEnemyCollision(enemies);
                     hero.Update(gameTime, key, platform, mouse);
                     hero.CheckProjectileEnemyCollision(enemies);
+
+                    previousKeyState = key;
 
                     if (mouse.LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Released)
                     {

@@ -37,6 +37,12 @@
 /processorParam:Quality=Best
 /build:Audios/HomeSong.mp3
 
+#begin Audios/Jump.MP3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audios/Jump.MP3
+
 #begin Audios/PewPew.mp3
 /importer:Mp3Importer
 /processor:SoundEffectProcessor
