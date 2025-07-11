@@ -32,14 +32,12 @@ namespace GameDesign_FinalProject
         bool faceLeft = false;
         bool faceRight = true;
 
-        Animation idleAnim, runAnim, jumpAnim, fallAnim;
-        Animation sprintAnim, shootAnim, hitAnim, deathAnim;
-        Animation currentAnim;
+       
 
-        bool isShooting = false;
+       
         bool canShoot = true;
-        bool isDead = false;
-        public bool DeathComplete { get; private set; } = false;
+       
+        
 
         Animation idleAnim, runAnim, jumpAnim, fallAnim;
         Animation sprintAnim, shootAnim, hitAnim, deathAnim;
@@ -53,8 +51,7 @@ namespace GameDesign_FinalProject
 
         SpriteEffects flip = SpriteEffects.None;
 
-        public Hero(Texture2D idle, Texture2D run, Texture2D jump, Texture2D fall,
-                    Texture2D sprint, Texture2D shoot, Texture2D hit, Texture2D death)
+       
         public Hero(Texture2D idle, Texture2D run, Texture2D jump, Texture2D fall,
                     Texture2D sprint, Texture2D shoot, Texture2D hit, Texture2D death, Texture2D projectileTex)
         {
@@ -82,38 +79,15 @@ namespace GameDesign_FinalProject
             this.projectileTexture = projectileTex;
         }
 
-        public void Update(GameTime gameTime, KeyboardState key, GamePlatform[] platforms, MouseState mouse)
-        {
-            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+        
 
         public void Update(GameTime gameTime, KeyboardState key, GamePlatform[] platforms, MouseState mouse)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (isDead)
-            {
-                deathAnim.Update(gameTime);
-                currentAnim = deathAnim;
+           
 
-                if (deathAnim.CurrentFrame == deathAnim.FrameCount - 1)
-                {
-                    DeathComplete = true;
-                }
-                return;
-            }
-
-            if (isHit)
-            {
-                hitTimer -= dt;
-                hitAnim.Update(gameTime);
-                currentAnim = hitAnim;
-
-                if (hitTimer <= 0)
-                {
-                    isHit = false;
-                }
-                return;
-            }
+            
 
             if (isInvincible)
             {
@@ -322,10 +296,7 @@ namespace GameDesign_FinalProject
             currentAnim.Update(gameTime);
         }
 
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            if (isVisible)
-                currentAnim.Draw(spriteBatch, Position, flip, 100, 100);
+        
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             if (isVisible)
