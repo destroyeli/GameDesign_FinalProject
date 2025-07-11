@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 
-namespace GameDesign_FinalProject
+namespace GameDesign_FinalProject //sample
 {
     public class Game1 : Game
     {
@@ -193,7 +193,8 @@ namespace GameDesign_FinalProject
                     break;
 
                 case GameState.Playing:
-                    hero.Update(gameTime, key, platform);
+                    hero.Update(gameTime, key, platform, mouse);
+
                     break;
 
                 case GameState.Loading:

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace GameDesign_FinalProject
 {
-    internal class Hero
+    internal class Hero //hero
     {
         public Vector2 Position;
         public Vector2 Velocity;
@@ -18,6 +18,9 @@ namespace GameDesign_FinalProject
         bool faceRight = true;
 
         Animation sprintAnim;
+
+        Animation shootAnim;
+        bool isShooting = false;
 
         Animation idleAnim, runAnim, jumpAnim, fallAnim;
         Animation currentAnim;
@@ -37,14 +40,39 @@ namespace GameDesign_FinalProject
             fallAnim = new Animation(fall, 4, 0.3f);
 
             sprintAnim = new Animation(sprint, 7, sprintRunInterval); // ← NEW!
+            shootAnim = new Animation(shoot, 6, 0.06f);
             currentAnim = idleAnim;
 
             projectileTexture = projectile; // Store the projectile texture
         }
 
 
-        public void Update(GameTime gameTime, KeyboardState key, GamePlatform[] platforms)
+        public void Update(GameTime gameTime, KeyboardState key, GamePlatform[] platforms, MouseState mouse)
         {
+            // Detect left mouse click
+            if (mouse.LeftButton == ButtonState.Pressed && !isShooting && !IsJumping)
+            {
+                isShooting = true;
+                shootAnim.CurrentFrame = 0;
+                shootAnim.Timer = 0f;
+                currentAnim = shootAnim;
+            }
+
+            // If shooting, override all other animations until done
+            if (isShooting)
+            {
+                shootAnim.Update(gameTime);
+                currentAnim = shootAnim;
+
+                if (shootAnim.CurrentFrame == shootAnim.FrameCount - 1)
+                {
+                    isShooting = false;
+                }
+
+                return; // Skip the rest of update logic while shooting
+            }
+
+
             // Sprint modifier and speed logic
             float moveSpeed = 3f;
             bool isSprinting = key.IsKeyDown(Keys.LeftShift) || key.IsKeyDown(Keys.RightShift);
