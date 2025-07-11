@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework.Content;
 
 namespace GameDesign_FinalProject
 {
@@ -9,6 +11,20 @@ namespace GameDesign_FinalProject
         public Vector2 Position;
         public Vector2 Velocity;
         public bool IsJumping;
+        public int Health { get; private set; } = 3;
+
+
+        bool isHit = false;
+        float hitTimer = 0f;
+        float hitDuration = 0.6f;
+
+        bool isInvincible = false;
+        float invincibilityTimer = 0f;
+        float invincibilityDuration = 2f;
+
+        bool isVisible = true;
+        float blinkTimer = 0f;
+        float blinkInterval = 0.1f;
 
         float normalRunInterval = 0.08f;
         float sprintRunInterval = 0.04f;
@@ -16,34 +32,81 @@ namespace GameDesign_FinalProject
         bool faceLeft = false;
         bool faceRight = true;
 
-        Animation sprintAnim;
-
-        Animation shootAnim;
-        bool isShooting = false;
-
         Animation idleAnim, runAnim, jumpAnim, fallAnim;
+        Animation sprintAnim, shootAnim, hitAnim, deathAnim;
         Animation currentAnim;
+
+        bool isShooting = false;
+        bool isDead = false;
+        public bool DeathComplete { get; private set; } = false;
 
         SpriteEffects flip = SpriteEffects.None;
 
-        public Hero(Texture2D idle, Texture2D run, Texture2D jump, Texture2D fall, Texture2D sprint, Texture2D shoot)
+        public Hero(Texture2D idle, Texture2D run, Texture2D jump, Texture2D fall,
+                    Texture2D sprint, Texture2D shoot, Texture2D hit, Texture2D death)
         {
-            Position = new Vector2(50, 450); // starting position
+            Position = new Vector2(50, 450);
 
             idleAnim = new Animation(idle, 7, 0.15f);
             runAnim = new Animation(run, 7, normalRunInterval);
             jumpAnim = new Animation(jump, 7, 0.12f);
             fallAnim = new Animation(fall, 4, 0.3f);
-
-            sprintAnim = new Animation(sprint, 7, sprintRunInterval); // ← NEW!
+            sprintAnim = new Animation(sprint, 7, sprintRunInterval);
             shootAnim = new Animation(shoot, 6, 0.06f);
-            currentAnim = idleAnim;
-        }
+            hitAnim = new Animation(hit, 5, 0.12f);
+            deathAnim = new Animation(death, 7, 0.15f, false); // No loop
 
+            currentAnim = idleAnim;
+            Health = 3;
+        }
 
         public void Update(GameTime gameTime, KeyboardState key, GamePlatform[] platforms, MouseState mouse)
         {
-            // Detect left mouse click
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (isDead)
+            {
+                deathAnim.Update(gameTime);
+                currentAnim = deathAnim;
+
+                if (deathAnim.CurrentFrame == deathAnim.FrameCount - 1)
+                {
+                    DeathComplete = true;
+                }
+                return;
+            }
+
+            if (isHit)
+            {
+                hitTimer -= dt;
+                hitAnim.Update(gameTime);
+                currentAnim = hitAnim;
+
+                if (hitTimer <= 0)
+                {
+                    isHit = false;
+                }
+                return;
+            }
+
+            if (isInvincible)
+            {
+                invincibilityTimer -= dt;
+                blinkTimer -= dt;
+
+                if (blinkTimer <= 0)
+                {
+                    isVisible = !isVisible;
+                    blinkTimer = blinkInterval;
+                }
+
+                if (invincibilityTimer <= 0)
+                {
+                    isInvincible = false;
+                    isVisible = true;
+                }
+            }
+
             if (mouse.LeftButton == ButtonState.Pressed && !isShooting && !IsJumping)
             {
                 isShooting = true;
@@ -52,7 +115,6 @@ namespace GameDesign_FinalProject
                 currentAnim = shootAnim;
             }
 
-            // If shooting, override all other animations until done
             if (isShooting)
             {
                 shootAnim.Update(gameTime);
@@ -63,35 +125,22 @@ namespace GameDesign_FinalProject
                     isShooting = false;
                 }
 
-                return; // Skip the rest of update logic while shooting
+                return;
             }
 
-
-            // Sprint modifier and speed logic
             float moveSpeed = 3f;
             bool isSprinting = key.IsKeyDown(Keys.LeftShift) || key.IsKeyDown(Keys.RightShift);
-
             if (isSprinting)
-            {
                 moveSpeed *= 2f;
-            }
-
-
 
             Velocity.X = 0;
 
-            // Run controls
-            // Movement & animation logic
             if (key.IsKeyDown(Keys.D) || key.IsKeyDown(Keys.Right))
             {
                 Velocity.X = moveSpeed;
                 flip = SpriteEffects.None;
-
                 if (!IsJumping)
-                {
                     currentAnim = isSprinting ? sprintAnim : runAnim;
-                }
-
                 faceRight = true;
                 faceLeft = false;
             }
@@ -99,28 +148,16 @@ namespace GameDesign_FinalProject
             {
                 Velocity.X = -moveSpeed;
                 flip = SpriteEffects.FlipHorizontally;
-
                 if (!IsJumping)
-                {
                     currentAnim = isSprinting ? sprintAnim : runAnim;
-                }
-
                 faceLeft = true;
                 faceRight = false;
             }
-            else
+            else if (!IsJumping)
             {
-                //  No movement key is pressed
-                Velocity.X = 0;
-
-                if (!IsJumping)
-                {
-                    currentAnim = idleAnim;
-                }
+                currentAnim = idleAnim;
             }
 
-
-            // Jump
             if (key.IsKeyDown(Keys.Space) && !IsJumping)
             {
                 Velocity.Y = -15f;
@@ -128,10 +165,8 @@ namespace GameDesign_FinalProject
                 currentAnim = jumpAnim;
             }
 
-            // Apply gravity
             Velocity.Y += 0.4f;
 
-            // Predict new position
             Vector2 nextPosition = Position + Velocity;
             Rectangle nextBounds = new Rectangle((int)nextPosition.X, (int)nextPosition.Y, 150, 100);
             Rectangle currentBounds = BoundingBox;
@@ -143,7 +178,6 @@ namespace GameDesign_FinalProject
                 if (p == null) continue;
                 Rectangle plat = p.PlatformDisplay;
 
-                // === Top Collision (landing on platform) ===
                 if (currentBounds.Bottom <= plat.Top &&
                     nextBounds.Bottom >= plat.Top &&
                     nextBounds.Right > plat.Left &&
@@ -155,19 +189,16 @@ namespace GameDesign_FinalProject
                     onPlatform = true;
                 }
 
-                // === Bottom Collision (head bumps) ===
                 if (currentBounds.Top >= plat.Bottom &&
                     nextBounds.Top <= plat.Bottom &&
                     nextBounds.Right > plat.Left &&
                     nextBounds.Left < plat.Right)
                 {
                     nextPosition.Y = plat.Bottom;
-                    Velocity.Y = 2f; // push down enough to resume falling
+                    Velocity.Y = 2f;
                     currentAnim = fallAnim;
                 }
 
-
-                // === Right-side Collision ===
                 if (currentBounds.Right <= plat.Left &&
                     nextBounds.Right >= plat.Left &&
                     nextBounds.Bottom > plat.Top &&
@@ -177,7 +208,6 @@ namespace GameDesign_FinalProject
                     Velocity.X = 0;
                 }
 
-                // === Left-side Collision ===
                 if (currentBounds.Left >= plat.Right &&
                     nextBounds.Left <= plat.Right &&
                     nextBounds.Bottom > plat.Top &&
@@ -188,34 +218,58 @@ namespace GameDesign_FinalProject
                 }
             }
 
-            // If not on a platform, remain jumping/falling
             if (!onPlatform)
-            {
                 IsJumping = true;
-            }
 
-            // Apply final position
             Position = nextPosition;
 
-            // Switch to fall animation if falling
             if (Velocity.Y > 1f && IsJumping)
-            {
                 currentAnim = fallAnim;
-            }
 
             currentAnim.Update(gameTime);
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            currentAnim.Draw(spriteBatch, Position, flip, 100, 100); // Resize to 150x100
+            if (isVisible)
+                currentAnim.Draw(spriteBatch, Position, flip, 100, 100);
         }
 
-        public Rectangle BoundingBox
+        public Rectangle BoundingBox => new Rectangle((int)Position.X, (int)Position.Y, 150, 100);
+
+        public void CheckEnemyCollision(List<Enemy> enemies)
         {
-            get { return new Rectangle((int)Position.X, (int)Position.Y, 150, 100); } // match hero draw size
-        }
+            if (isHit || isInvincible || isDead) return;
 
+            foreach (var enemy in enemies)
+            {
+                if (BoundingBox.Intersects(enemy.PositionRectangle))
+                {
+                    Health--; // Reduce health by 1
+
+                    if (Health <= 0)
+                    {
+                        // Trigger death animation
+                        isDead = true;
+                        deathAnim.CurrentFrame = 0;
+                        deathAnim.Timer = 0f;
+                    }
+                    else
+                    {
+                        // Trigger hit animation and invincibility
+                        isHit = true;
+                        isInvincible = true;
+                        hitTimer = hitDuration;
+                        invincibilityTimer = invincibilityDuration;
+                        blinkTimer = blinkInterval;
+                        hitAnim.CurrentFrame = 0;
+                        hitAnim.Timer = 0f;
+                    }
+
+                    break; // Only one collision counted
+                }
+            }
+        }
 
     }
 }
