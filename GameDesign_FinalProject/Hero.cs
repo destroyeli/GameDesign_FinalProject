@@ -37,7 +37,10 @@ namespace GameDesign_FinalProject
         private MouseState previousMouse;
         private bool hasShot = false;
 
-
+        private const int CollisionMarginX = 25;
+        private const int CollisionMarginY = 5;
+        private const int SpriteWidth = 150;
+        private const int SpriteHeight = 100;
 
         bool canShoot = true;
        
@@ -231,8 +234,13 @@ namespace GameDesign_FinalProject
             Velocity.Y += 0.4f;
 
             Vector2 nextPosition = Position + Velocity;
-            Rectangle nextBounds = new Rectangle((int)nextPosition.X, (int)nextPosition.Y, 150, 100);
             Rectangle currentBounds = BoundingBox;
+            Rectangle nextBounds = new Rectangle(
+                                        currentBounds.X + (int)(Velocity.X),
+                                        currentBounds.Y + (int)(Velocity.Y),
+                                        currentBounds.Width,
+                                        currentBounds.Height
+                                        );
 
             bool onPlatform = false;
 
@@ -246,7 +254,7 @@ namespace GameDesign_FinalProject
                     nextBounds.Right > plat.Left &&
                     nextBounds.Left < plat.Right)
                 {
-                    nextPosition.Y = plat.Top - currentBounds.Height;
+                    nextPosition.Y = plat.Top - (SpriteHeight - CollisionMarginY);
                     Velocity.Y = 0;
                     IsJumping = false;
                     onPlatform = true;
@@ -257,24 +265,26 @@ namespace GameDesign_FinalProject
                     nextBounds.Right > plat.Left &&
                     nextBounds.Left < plat.Right)
                 {
-                    nextPosition.Y = plat.Bottom;
+                    nextPosition.Y = plat.Bottom - CollisionMarginY;
                     Velocity.Y = 2f;
                     currentAnim = fallAnim;
                 }
 
-                if (currentBounds.Right <= plat.Left &&
+                if (
+                    currentBounds.Right <= plat.Left &&
                     nextBounds.Right >= plat.Left &&
-                    nextBounds.Bottom > plat.Top &&
-                    nextBounds.Top < plat.Bottom)
+                    currentBounds.Bottom > plat.Top &&
+                    currentBounds.Top < plat.Bottom)
                 {
                     nextPosition.X = plat.Left - currentBounds.Width;
                     Velocity.X = 0;
                 }
 
-                if (currentBounds.Left >= plat.Right &&
+                if (Velocity.X < 0 &&
+                    currentBounds.Left >= plat.Right &&
                     nextBounds.Left <= plat.Right &&
-                    nextBounds.Bottom > plat.Top &&
-                    nextBounds.Top < plat.Bottom)
+                    currentBounds.Bottom > plat.Top &&
+                    currentBounds.Top < plat.Bottom)
                 {
                     nextPosition.X = plat.Right;
                     Velocity.X = 0;
@@ -311,9 +321,18 @@ namespace GameDesign_FinalProject
             {
                 p.Draw(spriteBatch, gameTime);
             }
+
+            Texture2D debugTex = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+            debugTex.SetData(new[] { Color.Red });
+            spriteBatch.Draw(debugTex, BoundingBox, Color.Red * 0.4f);
         }
 
-        public Rectangle BoundingBox => new Rectangle((int)Position.X, (int)Position.Y, 150, 100);
+        public Rectangle BoundingBox => new Rectangle(
+                                            (int)Position.X + CollisionMarginX,
+                                            (int)Position.Y + CollisionMarginY,
+                                            SpriteWidth - 2 * CollisionMarginX,
+                                            SpriteHeight - 2 * CollisionMarginY
+                                            );
 
         public void CheckProjectileEnemyCollision(List<Enemy> enemies)
         {

@@ -100,7 +100,7 @@ namespace GameDesign_FinalProject //sample
                 "111112           777" +
                 "77777    22     E   " +
                 "                    " +
-                "               21111" +
+                "              211111" +
                 "                7777" +
                 "          E         " +
                 "111113  C           " +
