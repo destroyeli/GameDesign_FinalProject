@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace GameDesign_FinalProject
 {
-    internal class Hero
+    internal class Hero //hero
     {
         public Vector2 Position;
         public Vector2 Velocity;
