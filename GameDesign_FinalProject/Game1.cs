@@ -20,7 +20,7 @@ namespace GameDesign_FinalProject //sample
         private Texture2D projectileTexture;
 
         Hero hero;
-        Texture2D heroIdle, heroRun, heroJump, heroFall;
+        Texture2D heroIdle, heroRun, heroJump, heroFall, heroShoot;
 
         List<Enemy> enemies = new List<Enemy>();
 
@@ -157,8 +157,9 @@ namespace GameDesign_FinalProject //sample
             heroRun = Content.Load<Texture2D>("eli_walk");
             heroJump = Content.Load<Texture2D>("eli_jump");
             heroFall = Content.Load<Texture2D>("eli_fall");
+            heroShoot = Content.Load<Texture2D>("eli_shoot"); // ← your shoot spritesheet
             Texture2D heroSprint = Content.Load<Texture2D>("eli_sprint"); // ← your sprint spritesheet
-            hero = new Hero(heroIdle, heroRun, heroJump, heroFall, heroSprint, projectileTexture);
+            hero = new Hero(heroIdle, heroRun, heroJump, heroFall, heroSprint, heroShoot);
 
 
 

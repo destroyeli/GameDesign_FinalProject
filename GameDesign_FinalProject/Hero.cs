@@ -17,6 +17,8 @@ namespace GameDesign_FinalProject
         bool faceLeft = false;
         bool faceRight = true;
 
+        private bool hasFired = false;
+
         Animation sprintAnim;
 
         Animation shootAnim;
@@ -30,7 +32,7 @@ namespace GameDesign_FinalProject
 
         SpriteEffects flip = SpriteEffects.None;
 
-        public Hero(Texture2D idle, Texture2D run, Texture2D jump, Texture2D fall, Texture2D sprint, Texture2D projectile)
+        public Hero(Texture2D idle, Texture2D run, Texture2D jump, Texture2D fall, Texture2D sprint, Texture2D shoot)
         {
             Position = new Vector2(50, 450); // starting position
 
@@ -43,19 +45,30 @@ namespace GameDesign_FinalProject
             shootAnim = new Animation(shoot, 6, 0.06f);
             currentAnim = idleAnim;
 
-            projectileTexture = projectile; // Store the projectile texture
+
         }
 
 
         public void Update(GameTime gameTime, KeyboardState key, GamePlatform[] platforms, MouseState mouse)
         {
             // Detect left mouse click
-            if (mouse.LeftButton == ButtonState.Pressed && !isShooting && !IsJumping)
+            if (mouse.LeftButton == ButtonState.Pressed && !isShooting && !IsJumping && !hasFired)
             {
                 isShooting = true;
+                hasFired = true; // Prevent multiple shots in one click
                 shootAnim.CurrentFrame = 0;
                 shootAnim.Timer = 0f;
                 currentAnim = shootAnim;
+
+                Vector2 bulletPos = new Vector2(Position.X + 50, Position.Y + 30); // adjust bullet start point
+                bool direction = faceRight ? true : false;
+                projectiles.Clear(); // only one bullet at a time
+                projectiles.Add(new Projectile(projectileTexture, bulletPos, direction));
+
+            }
+            else if (mouse.LeftButton == ButtonState.Released)
+            {
+                hasFired = false; // allow firing again
             }
 
             // If shooting, override all other animations until done
@@ -125,21 +138,6 @@ namespace GameDesign_FinalProject
                 }
             }
 
-            MouseState mouse = Mouse.GetState();
-            if (mouse.RightButton == ButtonState.Pressed)
-            {
-                Vector2 firepos = new Vector2(Position.X + 75, Position.Y + 50); // Center of hero
-                bool faceRight = flip == SpriteEffects.None;
-                projectiles.Add(new Projectile(projectileTexture, firepos, faceRight));
-            }
-
-            for(int i = projectiles.Count - 1; i >= 0; i--)
-            {
-                projectiles[i].Update();
-                if (projectiles[i].Position.X < 0 || projectiles[i].Position.X > 1200)
-                    projectiles.RemoveAt(i); // Remove if off-screen
-
-            }
 
             // Jump
             if (key.IsKeyDown(Keys.Space) && !IsJumping)
@@ -224,6 +222,10 @@ namespace GameDesign_FinalProject
                 currentAnim = fallAnim;
             }
 
+            foreach (var p in projectiles)
+            {
+                p.Update();
+            }
 
             currentAnim.Update(gameTime);
         }
