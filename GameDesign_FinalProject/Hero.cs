@@ -41,14 +41,25 @@ namespace GameDesign_FinalProject
         bool isDead = false;
         public bool DeathComplete { get; private set; } = false;
 
+        Animation idleAnim, runAnim, jumpAnim, fallAnim;
+        Animation sprintAnim, shootAnim, hitAnim, deathAnim;
+        Animation currentAnim;
         private List<Projectile> projectiles = new List<Projectile>();
         private Texture2D projectileTexture;
+
+        bool isShooting = false;
+        bool isDead = false;
+        public bool DeathComplete { get; private set; } = false;
 
         SpriteEffects flip = SpriteEffects.None;
 
         public Hero(Texture2D idle, Texture2D run, Texture2D jump, Texture2D fall,
+                    Texture2D sprint, Texture2D shoot, Texture2D hit, Texture2D death)
+        public Hero(Texture2D idle, Texture2D run, Texture2D jump, Texture2D fall,
                     Texture2D sprint, Texture2D shoot, Texture2D hit, Texture2D death, Texture2D projectileTex)
         {
+            Position = new Vector2(50, 450);
+
             Position = new Vector2(50, 450);
             idleAnim = new Animation(idle, 7, 0.15f);
             runAnim = new Animation(run, 7, normalRunInterval);
@@ -59,7 +70,13 @@ namespace GameDesign_FinalProject
             hitAnim = new Animation(hit, 5, 0.12f);
             deathAnim = new Animation(death, 7, 0.15f, false); // No loop
 
+            sprintAnim = new Animation(sprint, 7, sprintRunInterval);
+            shootAnim = new Animation(shoot, 6, 0.06f);
+            hitAnim = new Animation(hit, 5, 0.12f);
+            deathAnim = new Animation(death, 7, 0.15f, false); // No loop
+
             currentAnim = idleAnim;
+            Health = 3;
             Health = 3;
 
             this.projectileTexture = projectileTex;
@@ -68,6 +85,53 @@ namespace GameDesign_FinalProject
         public void Update(GameTime gameTime, KeyboardState key, GamePlatform[] platforms, MouseState mouse)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+        public void Update(GameTime gameTime, KeyboardState key, GamePlatform[] platforms, MouseState mouse)
+        {
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (isDead)
+            {
+                deathAnim.Update(gameTime);
+                currentAnim = deathAnim;
+
+                if (deathAnim.CurrentFrame == deathAnim.FrameCount - 1)
+                {
+                    DeathComplete = true;
+                }
+                return;
+            }
+
+            if (isHit)
+            {
+                hitTimer -= dt;
+                hitAnim.Update(gameTime);
+                currentAnim = hitAnim;
+
+                if (hitTimer <= 0)
+                {
+                    isHit = false;
+                }
+                return;
+            }
+
+            if (isInvincible)
+            {
+                invincibilityTimer -= dt;
+                blinkTimer -= dt;
+
+                if (blinkTimer <= 0)
+                {
+                    isVisible = !isVisible;
+                    blinkTimer = blinkInterval;
+                }
+
+                if (invincibilityTimer <= 0)
+                {
+                    isInvincible = false;
+                    isVisible = true;
+                }
+            }
 
             if (isDead)
             {
@@ -150,6 +214,7 @@ namespace GameDesign_FinalProject
             if (isSprinting)
                 moveSpeed *= 2f;
 
+
             Velocity.X = 0;
 
             if (key.IsKeyDown(Keys.D) || key.IsKeyDown(Keys.Right))
@@ -169,6 +234,10 @@ namespace GameDesign_FinalProject
                     currentAnim = isSprinting ? sprintAnim : runAnim;
                 faceLeft = true;
                 faceRight = false;
+            }
+            else if (!IsJumping)
+            {
+                currentAnim = idleAnim;
             }
             else if (!IsJumping)
             {
@@ -245,6 +314,7 @@ namespace GameDesign_FinalProject
 
             foreach (var p in projectiles)
             {
+                currentAnim = fallAnim;
                 p.Update();
             }
                 projectiles.RemoveAll(p => p.Position.X < -50 || p.Position.X > 1400);
@@ -252,6 +322,10 @@ namespace GameDesign_FinalProject
             currentAnim.Update(gameTime);
         }
 
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            if (isVisible)
+                currentAnim.Draw(spriteBatch, Position, flip, 100, 100);
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             if (isVisible)
