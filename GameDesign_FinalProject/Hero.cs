@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace GameDesign_FinalProject
 {
@@ -24,9 +25,12 @@ namespace GameDesign_FinalProject
         Animation idleAnim, runAnim, jumpAnim, fallAnim;
         Animation currentAnim;
 
+        List<Projectile> projectiles = new List<Projectile>();
+        Texture2D projectileTexture;
+
         SpriteEffects flip = SpriteEffects.None;
 
-        public Hero(Texture2D idle, Texture2D run, Texture2D jump, Texture2D fall, Texture2D sprint, Texture2D shoot)
+        public Hero(Texture2D idle, Texture2D run, Texture2D jump, Texture2D fall, Texture2D sprint, Texture2D projectile)
         {
             Position = new Vector2(50, 450); // starting position
 
@@ -38,6 +42,8 @@ namespace GameDesign_FinalProject
             sprintAnim = new Animation(sprint, 7, sprintRunInterval); // ← NEW!
             shootAnim = new Animation(shoot, 6, 0.06f);
             currentAnim = idleAnim;
+
+            projectileTexture = projectile; // Store the projectile texture
         }
 
 
@@ -119,6 +125,21 @@ namespace GameDesign_FinalProject
                 }
             }
 
+            MouseState mouse = Mouse.GetState();
+            if (mouse.RightButton == ButtonState.Pressed)
+            {
+                Vector2 firepos = new Vector2(Position.X + 75, Position.Y + 50); // Center of hero
+                bool faceRight = flip == SpriteEffects.None;
+                projectiles.Add(new Projectile(projectileTexture, firepos, faceRight));
+            }
+
+            for(int i = projectiles.Count - 1; i >= 0; i--)
+            {
+                projectiles[i].Update();
+                if (projectiles[i].Position.X < 0 || projectiles[i].Position.X > 1200)
+                    projectiles.RemoveAt(i); // Remove if off-screen
+
+            }
 
             // Jump
             if (key.IsKeyDown(Keys.Space) && !IsJumping)
@@ -203,12 +224,18 @@ namespace GameDesign_FinalProject
                 currentAnim = fallAnim;
             }
 
+
             currentAnim.Update(gameTime);
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             currentAnim.Draw(spriteBatch, Position, flip, 100, 100); // Resize to 150x100
+
+            foreach (var p in projectiles)
+            {
+                p.Draw(spriteBatch, gameTime); // Assuming you have a method to draw projectiles
+            }
         }
 
         public Rectangle BoundingBox
