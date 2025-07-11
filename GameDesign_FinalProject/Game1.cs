@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 
-namespace GameDesign_FinalProject
+namespace GameDesign_FinalProject //sample
 {
     public class Game1 : Game
     {
