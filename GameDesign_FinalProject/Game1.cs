@@ -117,13 +117,13 @@ namespace GameDesign_FinalProject //sample
                 // Stage 2 layout (edit this as you want)
                 "                    " +
                 "                    " +
-                "         E           " +
+                "                    " +
                 "      21111112      " +
                 "       777777       " +
                 "                    " +
                 "   21112     21112  " +
                 "    777       777   " +
-                "                    " +
+                "                  E " +
                 "                    " +
                 "11111111111111111111" +
                 "66666666666666666666"
