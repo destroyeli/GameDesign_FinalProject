@@ -12,7 +12,9 @@ namespace GameDesign_FinalProject
         public Vector2 Velocity;
         public bool IsJumping;
         public int Health { get; private set; } = 3;
+        public List<Projectile> Projectiles => projectiles;
 
+        int lastShotFrame = -1; // To prevent multiple bullets in the same frame
 
         bool isHit = false;
         float hitTimer = 0f;
@@ -32,14 +34,14 @@ namespace GameDesign_FinalProject
         bool faceLeft = false;
         bool faceRight = true;
 
-        Animation idleAnim, runAnim, jumpAnim, fallAnim;
-        Animation sprintAnim, shootAnim, hitAnim, deathAnim;
-        Animation currentAnim;
+        private MouseState previousMouse;
+        private bool hasShot = false;
 
-        bool isShooting = false;
+
+
         bool canShoot = true;
-        bool isDead = false;
-        public bool DeathComplete { get; private set; } = false;
+       
+        
 
         Animation idleAnim, runAnim, jumpAnim, fallAnim;
         Animation sprintAnim, shootAnim, hitAnim, deathAnim;
@@ -53,8 +55,7 @@ namespace GameDesign_FinalProject
 
         SpriteEffects flip = SpriteEffects.None;
 
-        public Hero(Texture2D idle, Texture2D run, Texture2D jump, Texture2D fall,
-                    Texture2D sprint, Texture2D shoot, Texture2D hit, Texture2D death)
+       
         public Hero(Texture2D idle, Texture2D run, Texture2D jump, Texture2D fall,
                     Texture2D sprint, Texture2D shoot, Texture2D hit, Texture2D death, Texture2D projectileTex)
         {
@@ -82,38 +83,15 @@ namespace GameDesign_FinalProject
             this.projectileTexture = projectileTex;
         }
 
-        public void Update(GameTime gameTime, KeyboardState key, GamePlatform[] platforms, MouseState mouse)
-        {
-            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+        
 
         public void Update(GameTime gameTime, KeyboardState key, GamePlatform[] platforms, MouseState mouse)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (isDead)
-            {
-                deathAnim.Update(gameTime);
-                currentAnim = deathAnim;
+           
 
-                if (deathAnim.CurrentFrame == deathAnim.FrameCount - 1)
-                {
-                    DeathComplete = true;
-                }
-                return;
-            }
-
-            if (isHit)
-            {
-                hitTimer -= dt;
-                hitAnim.Update(gameTime);
-                currentAnim = hitAnim;
-
-                if (hitTimer <= 0)
-                {
-                    isHit = false;
-                }
-                return;
-            }
+            
 
             if (isInvincible)
             {
@@ -176,53 +154,48 @@ namespace GameDesign_FinalProject
                 }
             }
 
-            if (mouse.LeftButton == ButtonState.Pressed && !isShooting && !IsJumping)
-            {
-                isShooting = true;
-                shootAnim.CurrentFrame = 0;
-                shootAnim.Timer = 0f;
-                currentAnim = shootAnim;
-
-                Vector2 bulletPos = new Vector2(Position.X + (faceRight ? 90 : -10), Position.Y + 30); // adjust bullet start point
-                bool direction = faceRight;
-                projectiles.Add(new Projectile(projectileTexture, bulletPos, direction));
-
-                canShoot = false; // block firing until mouse is released
-
-            }
-            if (mouse.LeftButton == ButtonState.Released)
-            {
-                canShoot = true; // allow firing again
-                isShooting = false; // allow firing again
-            }
+            bool mouseClicked = mouse.LeftButton == ButtonState.Pressed && previousMouse.LeftButton == ButtonState.Released;
 
             if (isShooting)
             {
-                shootAnim.Update(gameTime);
                 currentAnim = shootAnim;
+                shootAnim.Update(gameTime);
+
+                if (!hasShot && shootAnim.CurrentFrame == 0)
+                {
+                    Vector2 bulletPos = new Vector2(Position.X + (faceRight ? 90 : -10), Position.Y + 30);
+                    projectiles.Add(new Projectile(projectileTexture, bulletPos, faceRight));
+                    hasShot = true;
+                }
 
                 if (shootAnim.CurrentFrame == shootAnim.FrameCount - 1)
                 {
                     isShooting = false;
+                    hasShot = false;
                 }
-
-                return;
             }
+            else if (mouseClicked && !IsJumping)
+            {
+                isShooting = true;
+                shootAnim.CurrentFrame = 0;
+                shootAnim.Timer = 0f;
+                hasShot = false;
+            }
+
+
 
             float moveSpeed = 3f;
             bool isSprinting = key.IsKeyDown(Keys.LeftShift) || key.IsKeyDown(Keys.RightShift);
             if (isSprinting)
                 moveSpeed *= 2f;
-
-
             Velocity.X = 0;
+
+
 
             if (key.IsKeyDown(Keys.D) || key.IsKeyDown(Keys.Right))
             {
                 Velocity.X = moveSpeed;
                 flip = SpriteEffects.None;
-                if (!IsJumping)
-                    currentAnim = isSprinting ? sprintAnim : runAnim;
                 faceRight = true;
                 faceLeft = false;
             }
@@ -230,19 +203,23 @@ namespace GameDesign_FinalProject
             {
                 Velocity.X = -moveSpeed;
                 flip = SpriteEffects.FlipHorizontally;
-                if (!IsJumping)
-                    currentAnim = isSprinting ? sprintAnim : runAnim;
                 faceLeft = true;
                 faceRight = false;
             }
-            else if (!IsJumping)
+
+            // ↓ This block sets animations only if not shooting
+            if (!isShooting)
             {
-                currentAnim = idleAnim;
+                if (Velocity.X > 0 || Velocity.X < 0)
+                {
+                    currentAnim = isSprinting ? sprintAnim : runAnim;
+                }
+                else if (!IsJumping)
+                {
+                    currentAnim = idleAnim;
+                }
             }
-            else if (!IsJumping)
-            {
-                currentAnim = idleAnim;
-            }
+
 
             if (key.IsKeyDown(Keys.Space) && !IsJumping)
             {
@@ -314,18 +291,17 @@ namespace GameDesign_FinalProject
 
             foreach (var p in projectiles)
             {
-                currentAnim = fallAnim;
-                p.Update();
+                p.Update(gameTime);
             }
                 projectiles.RemoveAll(p => p.Position.X < -50 || p.Position.X > 1400);
+
+            previousMouse = mouse;
+
 
             currentAnim.Update(gameTime);
         }
 
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            if (isVisible)
-                currentAnim.Draw(spriteBatch, Position, flip, 100, 100);
+        
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             if (isVisible)
@@ -336,6 +312,8 @@ namespace GameDesign_FinalProject
                 p.Draw(spriteBatch, gameTime);
             }
         }
+
+
 
         public Rectangle BoundingBox => new Rectangle((int)Position.X, (int)Position.Y, 150, 100);
 

@@ -8,26 +8,42 @@ namespace GameDesign_FinalProject
         private float velocity = 10f;
         private bool goingRight;
 
-        public Projectile(Texture2D spriteImage, Vector2 position, bool goingRight) : base(position)
-        {
+        private Animation animation;
 
-            this.SpriteImage = spriteImage;
-            this.SpriteWidth = 64f;
-            this.SpriteHeight = 64f;
+        public Vector2 Position { get; set; }
+
+        public Projectile(Texture2D spriteSheet, Vector2 position, bool goingRight) : base(position)
+        {
             this.goingRight = goingRight;
+            this.Position = position;
+
+            // Assuming bullet_final.png has 4 frames, evenly spaced horizontally
+            animation = new Animation(spriteSheet, 4, 0.1f); // 4 frames, 0.1s per frame
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
-            Vector2 pos = Position;
-            pos.X += goingRight ? velocity : -velocity;
-            Position = pos;
+            // Move the bullet
+            Position = new Vector2(Position.X + (goingRight ? velocity : -velocity), Position.Y);
+
+            // Update animation
+            animation.Update(gameTime);
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            this.Draw(gameTime, spriteBatch);
+            SpriteEffects flip = goingRight ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+            animation.Draw(spriteBatch, Position, flip, 40, 40); // adjust size as needed
         }
 
+        public Rectangle BoundingBox
+        {
+            get
+            {
+                return new Rectangle((int)Position.X, (int)Position.Y, 40, 40); // match Draw() size
+            }
+        }
     }
 }
+
+
