@@ -35,16 +35,16 @@ namespace GameDesign_FinalProject
 
         string _sceneLayout = "                    " +
                               "    E               " +
-                              "                ^^^^" +
-                              "^^^^^^           ---" +
-                              "-----    ^^         " +
+                              "                2111" +
+                              "111112           766" +
+                              "66667    22         " +
                               "                    " +
-                              "              ^^^^^ " +
-                              "    E          ---- " +
+                              "              21111 " +
+                              "    E          7666 " +
                               "                    " +
-                              "^^^^^^          E   " +
-                              "------------        " +
-                              "--------------------";
+                              "111113          E   " +
+                              "666664111113        " +
+                              "66666666666411111111";
 
         private int screenWidth = 1280;
 
@@ -88,7 +88,7 @@ namespace GameDesign_FinalProject
 
             platform = new GamePlatform[_sceneLayout.Length];
 
-            platformTexture = Content.Load<Texture2D>("Platform 1");
+            platformTexture = Content.Load<Texture2D>("Platform");
             platformColor = Color.White;
 
             for (int i = 0; i < _sceneLayout.Length; i++)
@@ -102,12 +102,28 @@ namespace GameDesign_FinalProject
 
                 switch (tile)
                 {
-                    case '-':
-                        platformSource = new Rectangle(platformTexture.Width / 6 * 4, 0, platformTexture.Width / 6, platformTexture.Height);
+                    case '1':
+                        platformSource = new Rectangle(platformTexture.Width / 7 * 0, 0, platformTexture.Width / 7, platformTexture.Height);
                         platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
                         break;
-                    case '^':
-                        platformSource = new Rectangle(platformTexture.Width / 6 * 0, 0, platformTexture.Width / 6, platformTexture.Height);
+                    case '2':
+                        platformSource = new Rectangle(platformTexture.Width / 7 * 1, 0, platformTexture.Width / 7, platformTexture.Height);
+                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
+                        break;
+                    case '3':
+                        platformSource = new Rectangle(platformTexture.Width / 7 * 2, 0, platformTexture.Width / 7, platformTexture.Height);
+                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
+                        break;
+                    case '4':
+                        platformSource = new Rectangle(platformTexture.Width / 7 * 3, 0, platformTexture.Width / 7, platformTexture.Height);
+                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
+                        break;
+                    case '6':
+                        platformSource = new Rectangle(platformTexture.Width / 7 * 5, 0, platformTexture.Width / 7, platformTexture.Height);
+                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
+                        break;
+                    case '7':
+                        platformSource = new Rectangle(platformTexture.Width / 7 * 6, 0, platformTexture.Width / 7, platformTexture.Height);
                         platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
                         break;
                     case 'E':

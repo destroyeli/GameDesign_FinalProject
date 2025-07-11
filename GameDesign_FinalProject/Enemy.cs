@@ -37,7 +37,7 @@ namespace GameDesign_FinalProject
 
         public void LoadContent()
         {
-            this.spriteImage = root.Content.Load<Texture2D>("eli_fall");
+            this.spriteImage = root.Content.Load<Texture2D>("1");
         }
 
         public void Update(GameTime gameTime, GamePlatform[] platforms, Hero hero)
