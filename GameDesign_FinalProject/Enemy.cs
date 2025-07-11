@@ -73,7 +73,7 @@ namespace GameDesign_FinalProject
         {
             float gravity = 0.5f;
             
-            velocity.Y += gravity; // Apply gravity
+            velocity.Y += gravity; // graviti
 
             if (hero.Position.X < position.X)
             {

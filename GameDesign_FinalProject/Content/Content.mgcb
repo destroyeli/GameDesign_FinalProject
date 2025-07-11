@@ -25,6 +25,36 @@
 /processorParam:TextureFormat=Color
 /build:1.png
 
+#begin Audios/BossSong.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Audios/BossSong.mp3
+
+#begin Audios/HomeSong.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Audios/HomeSong.mp3
+
+#begin Audios/Jump.MP3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audios/Jump.MP3
+
+#begin Audios/PewPew.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audios/PewPew.mp3
+
+#begin Audios/StageSong.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Audios/StageSong.mp3
+
 #begin Background1.png
 /importer:TextureImporter
 /processor:TextureProcessor

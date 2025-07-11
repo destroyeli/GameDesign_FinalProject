@@ -177,7 +177,7 @@ namespace GameDesign_FinalProject
                     hasShot = false;
                 }
             }
-            else if (mouseClicked && !IsJumping)
+            else if (mouseClicked)
             {
                 isShooting = true;
                 shootAnim.CurrentFrame = 0;
@@ -322,9 +322,9 @@ namespace GameDesign_FinalProject
                 p.Draw(spriteBatch, gameTime);
             }
 
-            Texture2D debugTex = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
-            debugTex.SetData(new[] { Color.Red });
-            spriteBatch.Draw(debugTex, BoundingBox, Color.Red * 0.4f);
+            //Texture2D debugTex = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+            //debugTex.SetData(new[] { Color.Red });
+            //spriteBatch.Draw(debugTex, BoundingBox, Color.Red * 0.4f);
         }
 
         public Rectangle BoundingBox => new Rectangle(

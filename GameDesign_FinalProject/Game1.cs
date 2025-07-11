@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media; //song
 using System.Collections.Generic;
 
 namespace GameDesign_FinalProject //sample
@@ -22,6 +24,11 @@ namespace GameDesign_FinalProject //sample
         private SpriteFont font; // For drawing 0/3 as text
         private Texture2D collectedBanner; // For drawing "Item Collected" banner
 
+        Song song;
+        SoundEffect effect;
+        MouseState previousMouseState;
+        SoundEffect jumpEffect;
+        KeyboardState previousKeyState;
 
         enum GameState { MainMenu, Playing, Loading }
         GameState currentGameState = GameState.MainMenu;
@@ -106,7 +113,7 @@ namespace GameDesign_FinalProject //sample
             {
                 // Stage 1 layout
                 "                   E" +
-                "    E            C  " +
+                "    E            B  " +
                 "  C             2111" +
                 "111112           777" +
                 "77777    22     E   " +
@@ -114,7 +121,7 @@ namespace GameDesign_FinalProject //sample
                 "              211111" +
                 "                7777" +
                 "          E         " +
-                "111113  C        E  " +
+                "111113  L        E  " +
                 "666664111113        " +
                 "66666666666411111111",
 
@@ -194,6 +201,14 @@ namespace GameDesign_FinalProject //sample
 
             foreach (Enemy e in enemies)
                 e.LoadContent();
+
+            song = Content.Load<Song>("Audios/StageSong");
+            MediaPlayer.Play(song);
+
+            effect = Content.Load<SoundEffect>("Audios/Pewpew");
+            jumpEffect = Content.Load<SoundEffect>("Audios/Jump");
+
+
         }
 
         protected override void Update(GameTime gameTime)
@@ -257,9 +272,23 @@ namespace GameDesign_FinalProject //sample
                     break;
 
                 case GameState.Playing:
+     
+                    if (key.IsKeyDown(Keys.Space) && !previousKeyState.IsKeyDown(Keys.Space))
+                    {
+                        if (!hero.IsJumping)
+                            jumpEffect.Play();
+                    }
+
                     hero.CheckEnemyCollision(enemies);
                     hero.Update(gameTime, key, platform, mouse);
                     hero.CheckProjectileEnemyCollision(enemies);
+
+                    previousKeyState = key;
+
+                    if (mouse.LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Released)
+                    {
+                        effect.Play();
+                    }
 
                     if (hero.DeathComplete)
                     {
@@ -271,7 +300,7 @@ namespace GameDesign_FinalProject //sample
                         if (!collectible.IsCollected && hero.BoundingBox.Intersects(collectible.BoundingBox))
                         {
                             collectible.IsCollected = true;
-                            // Optional: Add score or sound effect here
+                           
                         }
 
                         collectible.Update(gameTime);
@@ -342,6 +371,7 @@ namespace GameDesign_FinalProject //sample
                     enemies.RemoveAt(i); // ✅ remove after death anim plays
                 }
             }
+            previousMouseState = mouse;
             base.Update(gameTime);
         }
 
@@ -392,12 +422,12 @@ namespace GameDesign_FinalProject //sample
                 int bannerHeight = collectedBanner.Height;
 
                 Vector2 bannerPos = new Vector2(screenWidth - bannerWidth + 350, screenHeight - bannerHeight - 680);
-                float scale = 0.4f; // 👈 Adjust this number to shrink or enlarge
+                float scale = 0.4f; 
                 _spriteBatch.Draw(collectedBanner, bannerPos, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
 
 
                 string collectedText = $"{collectedCount}/{collectibles.Count}";
-                float textScale = 1.5f; // ← Increase this to make the text larger (1.0 = normal size)
+                float textScale = 1.5f; 
 
                 Vector2 textPos = new Vector2(screenWidth - 70, screenHeight - 735);
                 _spriteBatch.DrawString(font, collectedText, textPos, Color.White, 0f, Vector2.Zero, textScale, SpriteEffects.None, 0f);
@@ -466,7 +496,15 @@ namespace GameDesign_FinalProject //sample
                                 collectibles.Add(new Collectible(Content.Load<Texture2D>("item1"), new Vector2(x, y)));
                                 platform[i] = null;
                                 break;
-                            default:
+                            case 'B': //collectible but second item
+                                collectibles.Add(new Collectible(Content.Load<Texture2D>("item2"), new Vector2(x, y)));
+                                platform[i] = null;
+                                break;
+                            case 'L': //collectible but third item
+                                collectibles.Add(new Collectible(Content.Load<Texture2D>("item3"), new Vector2(x, y)));
+                                platform[i] = null;
+                                break;
+                    default:
                                 platform[i] = null;
                                 break;
                         }
