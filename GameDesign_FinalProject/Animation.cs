@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -17,12 +13,14 @@ namespace GameDesign_FinalProject
         public float Interval;
         public int FrameWidth;
         public int FrameHeight;
+        public bool Loop; // 👈 NEW field to control looping
 
-        public Animation(Texture2D texture, int frameCount, float interval)
+        public Animation(Texture2D texture, int frameCount, float interval, bool loop = true)
         {
             Texture = texture;
             FrameCount = frameCount;
             Interval = interval;
+            Loop = loop;
             CurrentFrame = 0;
             Timer = 0f;
             FrameWidth = texture.Width / frameCount;
@@ -35,9 +33,15 @@ namespace GameDesign_FinalProject
             if (Timer >= Interval)
             {
                 CurrentFrame++;
-                if (CurrentFrame >= FrameCount)
-                    CurrentFrame = 0;
                 Timer = 0f;
+
+                if (CurrentFrame >= FrameCount)
+                {
+                    if (Loop)
+                        CurrentFrame = 0;
+                    else
+                        CurrentFrame = FrameCount - 1; // Freeze on last frame if not looping
+                }
             }
         }
 
@@ -45,7 +49,6 @@ namespace GameDesign_FinalProject
         {
             Rectangle sourceRect = new Rectangle(CurrentFrame * FrameWidth, 0, FrameWidth, FrameHeight);
 
-            // Use custom size if provided
             int drawWidth = (width > 0) ? width : FrameWidth;
             int drawHeight = (height > 0) ? height : FrameHeight;
 
@@ -53,6 +56,5 @@ namespace GameDesign_FinalProject
 
             spriteBatch.Draw(Texture, destRect, sourceRect, Color.White, 0f, Vector2.Zero, flip, 0f);
         }
-
     }
 }

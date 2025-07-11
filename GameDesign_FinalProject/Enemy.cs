@@ -14,13 +14,20 @@ namespace GameDesign_FinalProject
         private Color spriteColor;
         private float spriteHeight;
 
-        public Rectangle PositionRectangle
-        {
-            get
-            {
-                return new Rectangle((int)position.X, (int)position.Y, (int)spriteWidth, (int)spriteHeight);
-            }
-        }
+public Rectangle PositionRectangle
+{
+    get
+    {
+        int shrinkAmount = 20; // shrink collision box by 20 pixels total (10 on each side)
+        return new Rectangle(
+            (int)position.X + shrinkAmount / 2,
+            (int)position.Y + shrinkAmount / 2,
+            (int)spriteWidth - shrinkAmount,
+            (int)spriteHeight - shrinkAmount
+        );
+    }
+}
+
         public Enemy(Game1 root, Vector2 position)
         {
             this.root = root;
