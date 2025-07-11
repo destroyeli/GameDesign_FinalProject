@@ -28,7 +28,9 @@ namespace GameDesign_FinalProject
         Rectangle platformDisplay, platformSource, backgroundRec;
         Color platformColor, backgroundColor;
 
-        int spriteWidth = 64, 
+        Texture2D backgroundTexture;
+
+        int spriteWidth = 64,
             spriteHeight = 64;
 
         string _sceneLayout = "                    " +
@@ -38,11 +40,12 @@ namespace GameDesign_FinalProject
                               "-----    ^^         " +
                               "                    " +
                               "              ^^^^^ " +
-                              "               ---- " +
-                              "         E      --  " +
-                              "^^^^^^            E " +
+                              "    E          ---- " +
+                              "                    " +
+                              "^^^^^^          E   " +
                               "------------        " +
                               "--------------------";
+
         private int screenWidth = 1280;
 
 
@@ -84,11 +87,11 @@ namespace GameDesign_FinalProject
             int borderHeight = Window.ClientBounds.Height;
 
             platform = new GamePlatform[_sceneLayout.Length];
-            
-            platformTexture = Content.Load<Texture2D>("Platform 9");
+
+            platformTexture = Content.Load<Texture2D>("Platform 1");
             platformColor = Color.White;
 
-            for(int i = 0; i < _sceneLayout.Length; i++)
+            for (int i = 0; i < _sceneLayout.Length; i++)
             {
                 char tile = _sceneLayout[i];
                 int x = (i % 20) * spriteWidth;
@@ -100,8 +103,8 @@ namespace GameDesign_FinalProject
                 switch (tile)
                 {
                     case '-':
-                        platformSource = new Rectangle(platformTexture.Width / 6 * 4 ,0, platformTexture.Width / 6, platformTexture.Height);
-                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor); 
+                        platformSource = new Rectangle(platformTexture.Width / 6 * 4, 0, platformTexture.Width / 6, platformTexture.Height);
+                        platform[i] = new GamePlatform(platformTexture, platformDisplay, platformSource, platformColor);
                         break;
                     case '^':
                         platformSource = new Rectangle(platformTexture.Width / 6 * 0, 0, platformTexture.Width / 6, platformTexture.Height);
@@ -204,15 +207,17 @@ namespace GameDesign_FinalProject
                         _spriteBatch.Draw(p1.PlatformTexture, p1.PlatformDisplay, p1.PlatformSource, p1.PlatformColor);
                 }
 
-            foreach (Enemy e in enemies)
-                e.Draw(gameTime, _spriteBatch);
-
+                foreach (Enemy e in enemies)
+                    e.Draw(gameTime, _spriteBatch);
+                
             hero.Draw(_spriteBatch);
+            }
+
 
 
             _spriteBatch.End();
             base.Draw(gameTime);
-        }
 
+        }
     }
 }

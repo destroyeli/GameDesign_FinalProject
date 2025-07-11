@@ -27,7 +27,7 @@ namespace GameDesign_FinalProject
 
         public Hero(Texture2D idle, Texture2D run, Texture2D jump, Texture2D fall, Texture2D sprint)
         {
-            Position = new Vector2(100, 300); // starting position
+            Position = new Vector2(50, 450); // starting position
 
             idleAnim = new Animation(idle, 7, 0.15f);
             runAnim = new Animation(run, 7, normalRunInterval);
