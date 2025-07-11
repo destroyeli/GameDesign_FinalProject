@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SharpDX.Direct3D9;
 
 namespace GameDesign_FinalProject
 {
@@ -29,5 +30,12 @@ namespace GameDesign_FinalProject
             this.Draw(gameTime, spriteBatch);
         }
 
+        public Rectangle BoundingBox
+        {
+            get
+            {
+                return new Rectangle((int)Position.X, (int)Position.Y,(int)SpriteWidth, (int)SpriteHeight); // Adjust size accordingly
+            }
+        }
     }
 }
