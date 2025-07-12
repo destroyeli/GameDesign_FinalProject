@@ -25,6 +25,12 @@
 /processorParam:TextureFormat=Color
 /build:1.png
 
+#begin Audios/BossDeath.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audios/BossDeath.mp3
+
 #begin Audios/BossSong.mp3
 /importer:Mp3Importer
 /processor:SongProcessor
@@ -60,6 +66,12 @@
 /processor:SongProcessor
 /processorParam:Quality=Best
 /build:Audios/StageSong.mp3
+
+#begin Audios/Winner.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audios/Winner.mp3
 
 #begin back_win.png
 /importer:TextureImporter
@@ -511,6 +523,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:LOAD.png
+
+#begin Next_Stage.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Next_Stage.png
 
 #begin Next_Stage.png
 /importer:TextureImporter

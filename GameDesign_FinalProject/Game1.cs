@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media; //song
+using Microsoft.Xna.Framework.Media; //song ohh lala
 using System.Collections.Generic;
 
 namespace GameDesign_FinalProject //sample
@@ -30,8 +30,8 @@ namespace GameDesign_FinalProject //sample
 
         List<Collectible> collectibles = new List<Collectible>();
 
-        private SpriteFont font; // For drawing 0/3 as text
-        private Texture2D collectedBanner; // For drawing "Item Collected" banner
+        private SpriteFont font; // for drawing 0/3 as text
+        private Texture2D collectedBanner; // item collected text
 
         Song song;
         SoundEffect effect;
@@ -39,6 +39,8 @@ namespace GameDesign_FinalProject //sample
         SoundEffect jumpEffect;
         KeyboardState previousKeyState;
         SoundEffect collectEffect;
+        SoundEffect bossEffect;
+        SoundEffect winEffect;
 
         enum GameState { MainMenu, Playing, Loading, GameOver, Win }
         GameState currentGameState = GameState.MainMenu;
@@ -146,7 +148,7 @@ namespace GameDesign_FinalProject //sample
                 "666664111113        " +
                 "66666666666411111111",
 
-                // Stage 2 layout (edit this as you want)
+                // Stage 2 layout (boss arena)
                 "                    " +
                 "           E        " +
                 "                    " +
@@ -182,13 +184,13 @@ namespace GameDesign_FinalProject //sample
 
             backgroundTexture = Content.Load<Texture2D>("Background1");
 
-            // Load hero textures
+            //hero sprites!!!
             heroIdle = Content.Load<Texture2D>("eli_Idle");
             heroRun = Content.Load<Texture2D>("eli_walk");
             heroJump = Content.Load<Texture2D>("eli_jump");
             heroFall = Content.Load<Texture2D>("eli_fall");
-            heroShoot = Content.Load<Texture2D>("eli_shoot"); // ← your shoot spritesheet
-            Texture2D heroSprint = Content.Load<Texture2D>("eli_sprint"); // ← your sprint spritesheet
+            heroShoot = Content.Load<Texture2D>("eli_shoot"); 
+            Texture2D heroSprint = Content.Load<Texture2D>("eli_sprint"); 
             Texture2D heroHit = Content.Load<Texture2D>("eli_hit");
             Texture2D heroDeath = Content.Load<Texture2D>("eli_death_7");
             hero = new Hero(heroIdle, heroRun, heroJump, heroFall, heroSprint, heroShoot, heroHit, heroDeath, projectileTexture);
@@ -196,15 +198,14 @@ namespace GameDesign_FinalProject //sample
 
             heartTexture = Content.Load<Texture2D>("heart");
 
-            collectedBanner = Content.Load<Texture2D>("collected"); // Make sure it's in your Content folder
-            font = Content.Load<SpriteFont>("DefaultFont"); // Create this in Content Pipeline
-
+            collectedBanner = Content.Load<Texture2D>("collected"); 
+            font = Content.Load<SpriteFont>("DefaultFont");
 
             Texture2D item1Tex = Content.Load<Texture2D>("item1");
             Texture2D item2Tex = Content.Load<Texture2D>("item2");
             Texture2D item3Tex = Content.Load<Texture2D>("item3");
 
-            // Manually position collectibles where you want them on the map
+            //collectibles positioning
             collectibles.Add(new Collectible(item1Tex, new Vector2(100, 128)));
             collectibles.Add(new Collectible(item2Tex, new Vector2(1064, 64)));
             collectibles.Add(new Collectible(item3Tex, new Vector2(1000, 600)));
@@ -248,20 +249,15 @@ namespace GameDesign_FinalProject //sample
             effect = Content.Load<SoundEffect>("Audios/Pewpew");
             jumpEffect = Content.Load<SoundEffect>("Audios/Jump");
             collectEffect = Content.Load<SoundEffect>("Audios/Collect");
-            pauseExitRect = new Rectangle((screenWidth / 2) - 100, (screenHeight / 2) + 130, 200, 70); // below Resume
-
-
-            // Position resume button at center bottom
+            bossEffect = Content.Load<SoundEffect>("Audios/BossDeath");
+            winEffect = Content.Load<SoundEffect>("Audios/Winner");
+            pauseExitRect = new Rectangle((screenWidth / 2) - 100, (screenHeight / 2) + 130, 200, 70); 
             resumeButtonRect = new Rectangle((screenWidth / 2) - 100, (screenHeight / 2) + 50, 200, 70);
-
-
 
         }
 
         protected override void Update(GameTime gameTime)
         {
-           
-
 
             KeyboardState key = Keyboard.GetState();
             MouseState mouse = Mouse.GetState();
@@ -274,8 +270,8 @@ namespace GameDesign_FinalProject //sample
 
                     if (mainMenu.PlayClicked)
                     {
-                        currentStageIndex = 0; // Start from the first stage
-                        ResetGame(stages[currentStageIndex]); // Reset the game state
+                        currentStageIndex = 0; 
+                        ResetGame(stages[currentStageIndex]); 
                         currentGameState = GameState.Playing;
                     }
                     else if (mainMenu.LoadClicked)
@@ -286,7 +282,7 @@ namespace GameDesign_FinalProject //sample
                         currentGameState = GameState.Playing;
                     }
                     else if (mainMenu.ExitClicked)
-                        Exit(); // Quit the game
+                        Exit(); //QUIT
                     break;
 
                 case GameState.Playing:
@@ -298,7 +294,7 @@ namespace GameDesign_FinalProject //sample
 
                     if (isPaused)
                     {
-                        // Pause menu input (buttons)
+                        //BUTTONS pause
                         if (mouse.LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Released)
                         {
                              mousePoint = mouse.Position;
@@ -318,10 +314,9 @@ namespace GameDesign_FinalProject //sample
                             }
                         }
 
-                        // Stop further updates if paused
                         previousKeyState = key;
                         previousMouseState = mouse;
-                        return; // ✅ skip rest of Update while paused
+                        return;
                     }
 
                     if (!isPaused)
@@ -330,40 +325,49 @@ namespace GameDesign_FinalProject //sample
                         {
                             finalBoss.Update(gameTime);
 
-                            // Check for projectile collision
+                            // projectile checking
                             for (int i = hero.Projectiles.Count - 1; i >= 0; i--)
                             {
                                 if (finalBoss.CollidesWith(hero.Projectiles[i].BoundingBox))
                                 {
                                     finalBoss.TakeDamage();
+
                                     hero.Projectiles.RemoveAt(i);
                                     break;
                                 }
                             }
 
-                            // Damage hero if touching boss
+                            //touch damage
                             if (finalBoss.CollidesWith(hero.BoundingBox))
                             {
                                 hero.TakeDamage();
-                                // Still triggers hit state
                             }
 
-                            // If boss defeated, maybe trigger something
                             if (finalBoss != null && finalBoss.IsDead)
                             {
                                 bossDeathTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-                                if (!bossDeathHandled && bossDeathTimer >= 1f)
+                                if (finalBoss != null && finalBoss.IsDead)
                                 {
-                                    bossDeathHandled = true;
-                                    finalBoss = null; //  Remove the boss sprite from view
+                                    if (!bossDeathHandled)
+                                    {
+                                        bossDeathHandled = true;
 
+                                        bossEffect?.Play();
+                                    }
 
+                                    bossDeathTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                                    if (bossDeathTimer >= 1f)
+                                    {
+                                        finalBoss = null; 
+                                    }
                                 }
                             }
 
                         }
                     }
+
 
                     if (key.IsKeyDown(Keys.Space) && !previousKeyState.IsKeyDown(Keys.Space))
                     {
@@ -413,6 +417,7 @@ namespace GameDesign_FinalProject //sample
                         }
                         else
                         {
+                            winEffect?.Play();
                             currentGameState = GameState.Win;
 
                         }
@@ -430,7 +435,6 @@ namespace GameDesign_FinalProject //sample
 
 
                 case GameState.Loading:
-                    // You can implement your loading logic here
                     currentGameState = GameState.Playing;
                     break;
 
@@ -478,7 +482,7 @@ namespace GameDesign_FinalProject //sample
 
                     if (enemy.PositionRectangle.Intersects(projectile.BoundingBox))
                     {
-                        enemy.TakeDamage(); // Instead of removing immediately
+                        enemy.TakeDamage();
 
                       
 
@@ -489,7 +493,7 @@ namespace GameDesign_FinalProject //sample
                 }
                 if (enemy.IsDead && enemy.CurrentFrame == 3)
                 {
-                    enemies.RemoveAt(i); // ✅ remove after death anim plays
+                    enemies.RemoveAt(i); 
                 }
             }
             previousMouseState = mouse;
@@ -504,7 +508,7 @@ namespace GameDesign_FinalProject //sample
 
             _spriteBatch.Draw(backgroundTexture, backgroundRec, backgroundColor);
 
-
+            //platforms
             if (currentGameState == GameState.MainMenu)
             {
                 mainMenu.Draw(_spriteBatch);
@@ -528,13 +532,13 @@ namespace GameDesign_FinalProject //sample
                 if (finalBoss != null)
                     finalBoss.Draw(_spriteBatch);
 
-                // Draw health hearts
+                //hearts/health
                 for (int i = 0; i < hero.Health; i++)
                 {
                     _spriteBatch.Draw(heartTexture, new Vector2(20 + i * 70, 20), Color.White);
                 }
 
-                // Draw collected banner and count
+                //collected items text number
                 int collectedCount = 0;
                 foreach (var item in collectibles)
                 {
@@ -559,10 +563,7 @@ namespace GameDesign_FinalProject //sample
 
                 if (isPaused)
                 {
-                    // Darken the screen (optional semi-transparent overlay)
                     _spriteBatch.Draw(pauseTexture, backgroundRec, Color.White);
-
-                    // Draw resume button
                     _spriteBatch.Draw(resumeTexture, resumeButtonRect, Color.White);
                     _spriteBatch.Draw(pauseExitTexture, pauseExitRect, Color.White);
                 }
@@ -601,11 +602,9 @@ namespace GameDesign_FinalProject //sample
                     bossDeathHandled = false;
                     bossDeathTimer = 0f;
 
-            // Clear old enemies
             enemies.Clear();
                     collectibles.Clear();
 
-                    // Reset platforms
                     for (int i = 0; i < _sceneLayout.Length; i++)
                     {
                        char tile = _sceneLayout[i];
@@ -642,7 +641,7 @@ namespace GameDesign_FinalProject //sample
                                 enemies.Add(new Enemy(this, new Vector2(x, y)));
                                 platform[i] = null;
                                 break;
-                            case 'C': // 'C' = Collectible spot
+                            case 'C': // 'C' = collectible spot
                                 collectibles.Add(new Collectible(Content.Load<Texture2D>("item1"), new Vector2(x, y)));
                                 platform[i] = null;
                                 break;
@@ -667,7 +666,7 @@ namespace GameDesign_FinalProject //sample
             foreach (Enemy e in enemies)
                 e.LoadContent();
 
-            // Recreate hero
+            // hero
             hero = new Hero(heroIdle, heroRun, heroJump, heroFall,
                             Content.Load<Texture2D>("eli_sprint"),
                             Content.Load<Texture2D>("eli_shoot"),
