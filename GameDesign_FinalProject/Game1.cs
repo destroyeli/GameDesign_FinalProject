@@ -276,10 +276,13 @@ namespace GameDesign_FinalProject //sample
                     }
                     else if (mainMenu.LoadClicked)
                     {
-                        currentStageIndex = savedStageIndex;
-                        ResetGame(savedSceneLayout);
-                        hero.Position = savedHeroPosition;
-                        currentGameState = GameState.Playing;
+                        if (!string.IsNullOrEmpty(savedSceneLayout))
+                        {
+                            currentStageIndex = savedStageIndex;
+                            ResetGame(savedSceneLayout);
+                            hero.Position = savedHeroPosition;
+                            currentGameState = GameState.Playing;
+                        }
                     }
                     else if (mainMenu.ExitClicked)
                         Exit(); //QUIT
