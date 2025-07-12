@@ -39,12 +39,16 @@ namespace GameDesign_FinalProject //sample
         SoundEffect jumpEffect;
         KeyboardState previousKeyState;
 
-        enum GameState { MainMenu, Playing, Loading }
+        enum GameState { MainMenu, Playing, Loading, GameOver, Win }
         GameState currentGameState = GameState.MainMenu;
 
 
         MainMenu mainMenu;
         Texture2D titleTex, playTex, loadTex, exitTex;
+
+        Texture2D winScreenTex, gameOverTex;
+        Texture2D winResumeBtn, winExitBtn, gameOverResumeBtn, gameOverExitBtn;
+        Rectangle winResumeRect, winExitRect, gameOverResumeRect, gameOverExitRect;
 
         private List<Projectile> projectiles;
         private Texture2D projectileTexture;
@@ -213,6 +217,25 @@ namespace GameDesign_FinalProject //sample
             loadTex = Content.Load<Texture2D>("Load");
             exitTex = Content.Load<Texture2D>("Exit");
 
+            pauseTexture = Content.Load<Texture2D>("Paused");
+            resumeTexture = Content.Load<Texture2D>("resume");
+
+            pauseExitTexture = Content.Load<Texture2D>("Exit");
+          
+
+            winScreenTex = Content.Load<Texture2D>("Win");
+            gameOverTex = Content.Load<Texture2D>("Game_Over");
+            winResumeBtn = resumeTexture;
+            winExitBtn = pauseExitTexture; 
+            gameOverResumeBtn = resumeTexture;
+            gameOverExitBtn = pauseExitTexture;
+
+            winResumeRect = new Rectangle((screenWidth / 2) - 100, (screenHeight / 2) + 50, 200, 70);
+            winExitRect = new Rectangle((screenWidth / 2) - 100, (screenHeight / 2) + 130, 200, 70);
+
+            gameOverResumeRect = new Rectangle((screenWidth / 2) - 100, (screenHeight / 2) + 200, 200, 70);
+            gameOverExitRect = new Rectangle((screenWidth / 2) - 100, (screenHeight / 2) + 300, 200, 70);
+
             mainMenu = new MainMenu(titleTex, playTex, loadTex, exitTex, screenWidth);
 
             foreach (Enemy e in enemies)
@@ -224,10 +247,6 @@ namespace GameDesign_FinalProject //sample
             effect = Content.Load<SoundEffect>("Audios/Pewpew");
             jumpEffect = Content.Load<SoundEffect>("Audios/Jump");
 
-            pauseTexture = Content.Load<Texture2D>("Paused");
-            resumeTexture = Content.Load<Texture2D>("resume");
-
-            pauseExitTexture = Content.Load<Texture2D>("Exit");
             pauseExitRect = new Rectangle((screenWidth / 2) - 100, (screenHeight / 2) + 130, 200, 70); // below Resume
 
 
@@ -245,6 +264,7 @@ namespace GameDesign_FinalProject //sample
 
             KeyboardState key = Keyboard.GetState();
             MouseState mouse = Mouse.GetState();
+            Point mousePoint = mouse.Position;
 
             switch (currentGameState)
             {
@@ -280,7 +300,7 @@ namespace GameDesign_FinalProject //sample
                         // Pause menu input (buttons)
                         if (mouse.LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Released)
                         {
-                            Point mousePoint = mouse.Position;
+                             mousePoint = mouse.Position;
 
                             if (resumeButtonRect.Contains(mousePoint))
                             {
@@ -343,6 +363,7 @@ namespace GameDesign_FinalProject //sample
 
                         }
                     }
+
                     if (key.IsKeyDown(Keys.Space) && !previousKeyState.IsKeyDown(Keys.Space))
                     {
                         if (!hero.IsJumping)
@@ -360,10 +381,6 @@ namespace GameDesign_FinalProject //sample
                         effect.Play();
                     }
 
-                    if (hero.DeathComplete)
-                    {
-                        currentGameState = GameState.MainMenu;
-                    }
 
                     foreach (var collectible in collectibles)
                     {
@@ -394,10 +411,18 @@ namespace GameDesign_FinalProject //sample
                         }
                         else
                         {
-                            currentGameState = GameState.MainMenu;
+                            currentGameState = GameState.Win;
+
                         }
                     }
 
+                    if (hero.DeathComplete)
+                    {
+                        savedStageIndex = currentStageIndex;
+                        savedSceneLayout = _sceneLayout;
+                        savedHeroPosition = hero.Position;
+                        currentGameState = GameState.GameOver;
+                    }
 
                     break;
 
@@ -405,6 +430,28 @@ namespace GameDesign_FinalProject //sample
                 case GameState.Loading:
                     // You can implement your loading logic here
                     currentGameState = GameState.Playing;
+                    break;
+
+                case GameState.GameOver:
+                case GameState.Win:
+                    if (currentGameState == GameState.GameOver && gameOverResumeRect.Contains(mousePoint))
+                    {
+                        currentStageIndex = 0; // Restart from the first level
+                        ResetGame(stages[currentStageIndex]);
+                        currentGameState = GameState.Playing;
+                    }
+                    else if (currentGameState == GameState.Win && winResumeRect.Contains(mousePoint))
+                    {
+                        ResetGame(savedSceneLayout);
+                        hero.Position = savedHeroPosition;
+                        currentStageIndex = savedStageIndex;
+                        currentGameState = GameState.Playing;
+                    }
+                    else if ((currentGameState == GameState.GameOver && gameOverExitRect.Contains(mousePoint)) ||
+                             (currentGameState == GameState.Win && winExitRect.Contains(mousePoint)))
+                    {
+                        currentGameState = GameState.MainMenu;
+                    }
                     break;
             }
 
@@ -492,6 +539,7 @@ namespace GameDesign_FinalProject //sample
                         collectedCount++;
                 }
 
+
                 int bannerWidth = collectedBanner.Width;
                 int bannerHeight = collectedBanner.Height;
 
@@ -516,8 +564,19 @@ namespace GameDesign_FinalProject //sample
                     _spriteBatch.Draw(pauseExitTexture, pauseExitRect, Color.White);
                 }
 
-                
+            }
 
+            else if (currentGameState == GameState.GameOver)
+            {
+                _spriteBatch.Draw(gameOverTex, backgroundRec, Color.White);
+                _spriteBatch.Draw(gameOverResumeBtn, gameOverResumeRect, Color.White);
+                _spriteBatch.Draw(gameOverExitBtn, gameOverExitRect, Color.White);
+            }
+            else if (currentGameState == GameState.Win)
+            {
+                _spriteBatch.Draw(winScreenTex, backgroundRec, Color.White);
+                _spriteBatch.Draw(winResumeBtn, winResumeRect, Color.White);
+                _spriteBatch.Draw(winExitBtn, winExitRect, Color.White);
             }
 
             foreach (Projectile p in projectiles)

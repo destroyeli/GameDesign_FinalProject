@@ -55,6 +55,18 @@
 /processorParam:Quality=Best
 /build:Audios/StageSong.mp3
 
+#begin back_win.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:back_win.png
+
 #begin Background1.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -338,6 +350,18 @@
 /processorParam:TextureFormat=Color
 /build:Game Background 1.png
 
+#begin Game_Over.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Game_Over.png
+
 #begin Heart.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -470,6 +494,18 @@
 /processorParam:TextureFormat=Color
 /build:LOAD.png
 
+#begin Next_Stage.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Next_Stage.png
+
 #begin Paused.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -529,4 +565,28 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:resume.png
+
+#begin Win.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Win.png
+
+#begin x_eli_fullsprite.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:x_eli_fullsprite.png
 
