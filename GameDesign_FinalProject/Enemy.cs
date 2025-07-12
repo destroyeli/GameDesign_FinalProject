@@ -31,8 +31,8 @@ namespace GameDesign_FinalProject
         private bool isMoving = true;
 
 
-        private Rectangle spriteRectangle; // Visual drawing rectangle
-        private Rectangle hitboxRectangle; // Collision box
+        private Rectangle spriteRectangle; 
+        private Rectangle hitboxRectangle; //collision box
 
         public Rectangle PositionRectangle
         {
@@ -178,12 +178,12 @@ namespace GameDesign_FinalProject
 
                     if (frameRow == 2 && currentFrame > 3)
                     {
-                        currentFrame = 3; // Stay at last death frame
+                        currentFrame = 3; // stay at last death frame
                     }
                     else if (frameRow == 1 && currentFrame > 3)
                     {
                         currentFrame = 0;
-                        isHit = false; // Done showing hit
+                        isHit = false; 
                     }
                     else if (currentFrame > 3)
                     {
@@ -201,9 +201,9 @@ namespace GameDesign_FinalProject
 
             _spriteBatch.Draw(spriteImage, destRect, sourceRect, spriteColor);
 
-            Texture2D debugTex = new Texture2D(root.GraphicsDevice, 1, 1);
-            debugTex.SetData(new[] { Color.Red });
-            _spriteBatch.Draw(debugTex, PositionRectangle, Color.Red * 0.5f);
+            //Texture2D debugTex = new Texture2D(root.GraphicsDevice, 1, 1);
+            //debugTex.SetData(new[] { Color.Red });
+            //_spriteBatch.Draw(debugTex, PositionRectangle, Color.Red * 0.5f);
         }
 
         public void TakeDamage()

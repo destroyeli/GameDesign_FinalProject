@@ -13,7 +13,7 @@ namespace GameDesign_FinalProject
         public float Interval;
         public int FrameWidth;
         public int FrameHeight;
-        public bool Loop; // 👈 NEW field to control looping
+        public bool Loop; 
 
         public Animation(Texture2D texture, int frameCount, float interval, bool loop = true)
         {
@@ -40,7 +40,7 @@ namespace GameDesign_FinalProject
                     if (Loop)
                         CurrentFrame = 0;
                     else
-                        CurrentFrame = FrameCount - 1; // Freeze on last frame if not looping
+                        CurrentFrame = FrameCount - 1; 
                 }
             }
         }

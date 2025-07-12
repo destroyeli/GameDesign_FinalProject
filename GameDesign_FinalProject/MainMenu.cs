@@ -18,7 +18,6 @@ namespace GameDesign_FinalProject
             loadBtn = load;
             exitBtn = exit;
 
-            // Center and position elements
             int centerX = screenWidth / 2;
 
             titleRect = new Rectangle(0, 0, 1280, 768);

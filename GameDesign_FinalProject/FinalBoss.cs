@@ -38,7 +38,7 @@ namespace GameDesign_FinalProject
             currentAnim = walkAnim;
 
             position = startPos;
-            velocity = new Vector2(-10f, 0); // Moves left initially
+            velocity = new Vector2(-10f, 0); 
             this.screenWidth = screenWidth;
         }
 
@@ -64,7 +64,7 @@ namespace GameDesign_FinalProject
             }
             else
             {
-                // Move boss and bounce off screen edges
+  
                 position += velocity;
 
                 if (position.X < 0 || position.X + 150 > screenWidth)

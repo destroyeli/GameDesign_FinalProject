@@ -14,7 +14,7 @@ namespace GameDesign_FinalProject
         public int Health { get; private set; } = 3;
         public List<Projectile> Projectiles => projectiles;
 
-        int lastShotFrame = -1; // To prevent multiple bullets in the same frame
+        int lastShotFrame = -1; 
 
         bool isHit = false;
         float hitTimer = 0f;
@@ -72,12 +72,12 @@ namespace GameDesign_FinalProject
             sprintAnim = new Animation(sprint, 7, sprintRunInterval);
             shootAnim = new Animation(shoot, 6, 0.06f);
             hitAnim = new Animation(hit, 5, 0.12f);
-            deathAnim = new Animation(death, 7, 0.15f, false); // No loop
+            deathAnim = new Animation(death, 7, 0.15f, false); 
 
             sprintAnim = new Animation(sprint, 7, sprintRunInterval);
             shootAnim = new Animation(shoot, 6, 0.06f);
             hitAnim = new Animation(hit, 5, 0.12f);
-            deathAnim = new Animation(death, 7, 0.15f, false); // No loop
+            deathAnim = new Animation(death, 7, 0.15f, false); 
 
             currentAnim = idleAnim;
             Health = 3;
@@ -210,7 +210,6 @@ namespace GameDesign_FinalProject
                 faceRight = false;
             }
 
-            // ↓ This block sets animations only if not shooting
             if (!isShooting)
             {
                 if (Velocity.X > 0 || Velocity.X < 0)
@@ -346,9 +345,9 @@ namespace GameDesign_FinalProject
 
                     if (proj.BoundingBox.Intersects(enemy.PositionRectangle))
                     {
-                        enemies.RemoveAt(j);         // Remove enemy
-                        projectiles.RemoveAt(i);     // Remove projectile
-                        break; // Exit inner loop — one hit per projectile
+                        enemies.RemoveAt(j);         
+                        projectiles.RemoveAt(i);    
+                        break; 
                     }
                 }
             }
@@ -376,8 +375,8 @@ namespace GameDesign_FinalProject
                 hitAnim.CurrentFrame = 0;
                 hitAnim.Timer = 0f;
 
-                Velocity.X = faceRight ? -5f : 5f; // Push hero away from the direction they're facing
-                Velocity.Y = -5f; // Small upward bounce
+                Velocity.X = faceRight ? -5f : 5f; 
+                Velocity.Y = -5f; 
             }
         }
 
