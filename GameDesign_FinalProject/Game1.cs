@@ -225,13 +225,13 @@ namespace GameDesign_FinalProject //sample
 
             winScreenTex = Content.Load<Texture2D>("Win");
             gameOverTex = Content.Load<Texture2D>("Game_Over");
-            winResumeBtn = resumeTexture;
+            winResumeBtn = Content.Load<Texture2D>("back_win") ;
             winExitBtn = pauseExitTexture; 
             gameOverResumeBtn = resumeTexture;
             gameOverExitBtn = pauseExitTexture;
 
-            winResumeRect = new Rectangle((screenWidth / 2) - 100, (screenHeight / 2) + 50, 200, 70);
-            winExitRect = new Rectangle((screenWidth / 2) - 100, (screenHeight / 2) + 130, 200, 70);
+            winResumeRect = new Rectangle((screenWidth / 2) - 100, (screenHeight / 2) + 300, 200, 70);
+            winExitRect = new Rectangle((screenWidth / 2) - 100, (screenHeight / 2) + 400, 200, 70);
 
             gameOverResumeRect = new Rectangle((screenWidth / 2) - 100, (screenHeight / 2) + 200, 200, 70);
             gameOverExitRect = new Rectangle((screenWidth / 2) - 100, (screenHeight / 2) + 300, 200, 70);
@@ -434,23 +434,26 @@ namespace GameDesign_FinalProject //sample
 
                 case GameState.GameOver:
                 case GameState.Win:
-                    if (currentGameState == GameState.GameOver && gameOverResumeRect.Contains(mousePoint))
+                    if(mouse.LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Released)
                     {
-                        currentStageIndex = 0; // Restart from the first level
-                        ResetGame(stages[currentStageIndex]);
-                        currentGameState = GameState.Playing;
-                    }
-                    else if (currentGameState == GameState.Win && winResumeRect.Contains(mousePoint))
-                    {
-                        ResetGame(savedSceneLayout);
-                        hero.Position = savedHeroPosition;
-                        currentStageIndex = savedStageIndex;
-                        currentGameState = GameState.Playing;
-                    }
-                    else if ((currentGameState == GameState.GameOver && gameOverExitRect.Contains(mousePoint)) ||
-                             (currentGameState == GameState.Win && winExitRect.Contains(mousePoint)))
-                    {
-                        currentGameState = GameState.MainMenu;
+                        if (currentGameState == GameState.GameOver && gameOverResumeRect.Contains(mousePoint))
+                        {
+                        
+                            ResetGame(stages[currentStageIndex]);
+                            currentGameState = GameState.Playing;
+                        }
+                        else if (currentGameState == GameState.GameOver && gameOverExitRect.Contains(mousePoint))
+                        {
+                            ResetGame(savedSceneLayout);
+                            hero.Position = savedHeroPosition;
+                            currentStageIndex = savedStageIndex;
+                        }
+                        else if ((currentGameState == GameState.GameOver && gameOverExitRect.Contains(mousePoint)) ||
+                                 (currentGameState == GameState.Win && winResumeRect.Contains(mousePoint)))
+                        {
+                            currentGameState = GameState.MainMenu;
+                        }
+
                     }
                     break;
             }
