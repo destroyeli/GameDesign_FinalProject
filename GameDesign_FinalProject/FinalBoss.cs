@@ -25,7 +25,7 @@ namespace GameDesign_FinalProject
 
         public Rectangle BoundingBox => new Rectangle((int)position.X, (int)position.Y, 300, 200);
 
-        public FinalBoss(Texture2D walkTex, Texture2D hitTex, Texture2D deathTex, Vector2 startPos, int screenW)
+        public FinalBoss(Texture2D walkTex, Texture2D hitTex, Texture2D deathTex, Vector2 startPos, int screenWidth)
         {
             walkTexture = walkTex;
             hitTexture = hitTex;
@@ -39,7 +39,7 @@ namespace GameDesign_FinalProject
 
             position = startPos;
             velocity = new Vector2(-10f, 0); // Moves left initially
-            screenWidth = screenW;
+            this.screenWidth = screenWidth;
         }
 
         public void Update(GameTime gameTime)
